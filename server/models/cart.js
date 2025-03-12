@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     },
     totalPris: {
-      type: DataTypes.VARCHAR,
+      type: DataTypes.DOUBLE,
       allowNull: false,
     },
   });
