@@ -8,15 +8,29 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
-    res.send(req.body);
+    db.products.create(req.body).then(result => {
+        res.send(result);
+    });
 });
 
 router.put('/', (req, res) => {
-    res.send('Put products');
+    db.products
+     .update(req.body, {
+        where: {id: req.body.id } 
+    })
+    .then(result => {
+        res.send(result);
+    })
 });
 
 router.delete('/', (req, res) => {
-    res.send('Delete products');
+    db.products
+    .destroy({
+        where: {id: req.body.id } 
+    })
+    .then((result) => {
+        res.json(`Produkten togs bort`);
+    });
 });
 
 

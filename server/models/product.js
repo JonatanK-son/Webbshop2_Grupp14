@@ -6,12 +6,12 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true
         },
         created_at: {
-            type: DataTypes.DATE , // Vet inte om det är rätt
-            allowNull: false
+            type: DataTypes.DATE, 
+            allowNull: true
         },
         updated_at: {
             type: DataTypes.DATE,
-            allowNull: false
+            allowNull: true
         },
         title: {
             type: DataTypes.STRING(100),
