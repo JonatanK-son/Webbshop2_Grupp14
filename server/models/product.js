@@ -5,14 +5,6 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             autoIncrement: true
         },
-        created_at: {
-            type: DataTypes.DATE, 
-            allowNull: true
-        },
-        updated_at: {
-            type: DataTypes.DATE,
-            allowNull: true
-        },
         title: {
             type: DataTypes.STRING(100),
             allowNull: false
