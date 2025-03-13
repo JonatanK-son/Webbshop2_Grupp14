@@ -1,10 +1,10 @@
-import { Box, Typography, Button, Container } from '@mui/material';
+import { Box, Typography, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 
 // Hero section with color background
 const HeroSection = styled(Box)(({ theme }) => ({
-  height: '60vh',
+  height: '100vh',
   width: '100%',
   backgroundColor: '#2d2d2d',
   display: 'flex',

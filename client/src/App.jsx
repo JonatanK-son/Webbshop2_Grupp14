@@ -21,11 +21,13 @@ const StyledMenu = styled(Box)(({ theme }) => ({
 
 const MenuContainer = styled(Container)(({ theme }) => ({
   display: 'flex',
-  justifyContent: 'space-between',
+  justifyContent: 'center',
+  gap: theme.spacing(4),
   padding: theme.spacing(2, 4),
   [theme.breakpoints.down('sm')]: {
     flexDirection: 'column',
     gap: theme.spacing(2),
+    alignItems: 'center',
   }
 }));
 
@@ -42,9 +44,7 @@ function App() {
   const menuItems = [
     { name: "Home", path: "/" },
     { name: "All Products", path: "/products" },
-    { name: "Electronics", path: "/products" },
-    { name: "Clothing", path: "/products" },
-    { name: "Home & Living", path: "/products" },
+    { name: "Admin", path: "/admin" }
   ];
 
   return (
@@ -74,7 +74,8 @@ function App() {
             sx={{ 
               flexGrow: 1, 
               fontWeight: 'bold',
-              letterSpacing: '1px'
+              letterSpacing: '1px',
+              cursor: 'pointer'
             }}
             onClick={() => navigate('/')}
           >
@@ -129,6 +130,8 @@ function App() {
                 }}
                 sx={{ 
                   color: '#333',
+                  fontWeight: 'medium',
+                  fontSize: '1rem',
                   '&:hover': {
                     backgroundColor: 'transparent',
                     color: '#000'
