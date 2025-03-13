@@ -7,6 +7,7 @@ import ProductDetails from './views/ProductDetails.jsx'
 import ProductEdit from './views/ProductEdit.jsx'
 import Products from './views/Products.jsx'
 import Admin from './views/Admin.jsx'
+import Login from './views/Login.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { CartProvider } from './context/CartContext.jsx';
 
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
       {
         path: '/admin',
         element: <Admin />
+      },
+      {
+        path: '/login',
+        element: <Login />
       }
     ]
   }

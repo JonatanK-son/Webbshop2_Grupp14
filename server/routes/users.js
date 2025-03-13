@@ -2,6 +2,16 @@ const express = require('express');
 const router = express.Router();
 const userService = require('../services/userService');
 
+// Login user
+router.post('/login', async (req, res) => {
+  try {
+    const result = await userService.login(req.body);
+    res.json(result);
+  } catch (error) {
+    res.status(401).json({ error: error.message });
+  }
+});
+
 // Get all users (admin only)
 router.get('/', async (req, res) => {
   try {
@@ -31,6 +41,16 @@ router.post('/register', async (req, res) => {
   try {
     const newUser = await userService.createUser(req.body);
     res.status(201).json(newUser);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Create admin user (only for development or initial setup)
+router.post('/create-admin', async (req, res) => {
+  try {
+    const adminUser = await userService.createAdminUser(req.body);
+    res.status(201).json(adminUser);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }

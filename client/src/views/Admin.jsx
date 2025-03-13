@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Box, 
   Container, 
@@ -23,78 +23,16 @@ import {
   Select,
   MenuItem,
   Tabs,
-  Tab
+  Tab,
+  Alert,
+  CircularProgress
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-
-// Sample product data - in a real app, this would come from an API
-const initialProducts = [
-  {
-    id: 1,
-    name: 'Product 1',
-    price: 199,
-    category: 'Electronics',
-    stock: 10,
-    image: 'https://via.placeholder.com/300x200',
-    description: 'This is a description of product 1'
-  },
-  {
-    id: 2,
-    name: 'Product 2',
-    price: 299,
-    category: 'Clothing',
-    stock: 15,
-    image: 'https://via.placeholder.com/300x200',
-    description: 'This is a description of product 2'
-  },
-  {
-    id: 3,
-    name: 'Product 3',
-    price: 399,
-    category: 'Home',
-    stock: 5,
-    image: 'https://via.placeholder.com/300x200',
-    description: 'This is a description of product 3'
-  },
-  {
-    id: 4,
-    name: 'Product 4',
-    price: 499,
-    category: 'Electronics',
-    stock: 8,
-    image: 'https://via.placeholder.com/300x200',
-    description: 'This is a description of product 4'
-  },
-  {
-    id: 5,
-    name: 'Product 5',
-    price: 599,
-    category: 'Clothing',
-    stock: 20,
-    image: 'https://via.placeholder.com/300x200',
-    description: 'This is a description of product 5'
-  },
-  {
-    id: 6,
-    name: 'Product 6',
-    price: 699,
-    category: 'Home',
-    stock: 12,
-    image: 'https://via.placeholder.com/300x200',
-    description: 'This is a description of product 6'
-  }
-];
-
-// Sample orders data
-const initialOrders = [
-  { id: 1, customer: 'John Doe', date: '2023-05-15', status: 'Delivered', total: 498 },
-  { id: 2, customer: 'Jane Smith', date: '2023-05-16', status: 'Processing', total: 299 },
-  { id: 3, customer: 'Bob Johnson', date: '2023-05-17', status: 'Shipped', total: 1099 },
-  { id: 4, customer: 'Alice Brown', date: '2023-05-18', status: 'Processing', total: 799 },
-];
+import { productService, adminService, userService } from '../services';
+import { useNavigate } from 'react-router-dom';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   fontWeight: theme.typography.fontWeightMedium,
@@ -110,8 +48,9 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 function Admin() {
-  const [products, setProducts] = useState(initialProducts);
-  const [orders, setOrders] = useState(initialOrders);
+  const navigate = useNavigate();
+  const [products, setProducts] = useState([]);
+  const [orders, setOrders] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [currentProduct, setCurrentProduct] = useState({ 
     name: '', 
@@ -123,6 +62,87 @@ function Admin() {
   });
   const [isEditing, setIsEditing] = useState(false);
   const [tabValue, setTabValue] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [stats, setStats] = useState(null);
+
+  // Check if user is admin
+  useEffect(() => {
+    const checkAdmin = async () => {
+      try {
+        const currentUser = userService.getCurrentUser();
+        if (!currentUser) {
+          navigate('/login');
+          return;
+        }
+        
+        // You might want to verify the admin status with the backend
+        const userProfile = await userService.getUserProfile(currentUser.id);
+        if (userProfile.role !== 'admin') {
+          navigate('/');
+        }
+      } catch (err) {
+        console.error('Error checking admin status:', err);
+        navigate('/');
+      }
+    };
+
+    checkAdmin();
+  }, [navigate]);
+
+  // Fetch products
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const data = await productService.getAllProducts();
+        setProducts(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setError('Failed to load products. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  // Fetch orders
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        const data = await adminService.getAllOrders();
+        setOrders(data);
+        setError(null);
+      } catch (err) {
+        console.error('Error fetching orders:', err);
+        setError('Failed to load orders. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (tabValue === 1) {
+      fetchOrders();
+    }
+  }, [tabValue]);
+
+  // Fetch dashboard stats
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const data = await adminService.getDashboardStats();
+        setStats(data);
+      } catch (err) {
+        console.error('Error fetching stats:', err);
+      }
+    };
+
+    fetchStats();
+  }, []);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -148,6 +168,7 @@ function Admin() {
 
   const handleCloseDialog = () => {
     setOpenDialog(false);
+    setError(null);
   };
 
   const handleInputChange = (e) => {
@@ -158,30 +179,97 @@ function Admin() {
     });
   };
 
-  const handleSaveProduct = () => {
-    if (isEditing) {
-      // Update existing product
-      setProducts(products.map(p => p.id === currentProduct.id ? currentProduct : p));
-    } else {
-      // Add new product
-      const newProduct = {
-        ...currentProduct,
-        id: Math.max(...products.map(p => p.id)) + 1
-      };
-      setProducts([...products, newProduct]);
+  const handleSaveProduct = async () => {
+    try {
+      if (isEditing) {
+        // Update existing product
+        await productService.updateProduct(currentProduct.id, currentProduct);
+        setProducts(products.map(p => p.id === currentProduct.id ? currentProduct : p));
+      } else {
+        // Add new product
+        const newProduct = await productService.createProduct(currentProduct);
+        setProducts([...products, newProduct]);
+      }
+      handleCloseDialog();
+      setError(null);
+    } catch (err) {
+      console.error('Error saving product:', err);
+      setError('Failed to save product. Please try again.');
     }
-    handleCloseDialog();
   };
 
-  const handleDeleteProduct = (id) => {
-    setProducts(products.filter(p => p.id !== id));
+  const handleDeleteProduct = async (id) => {
+    try {
+      await productService.deleteProduct(id);
+      setProducts(products.filter(p => p.id !== id));
+      setError(null);
+    } catch (err) {
+      console.error('Error deleting product:', err);
+      setError('Failed to delete product. Please try again.');
+    }
   };
+
+  const handleUpdateOrderStatus = async (orderId, status) => {
+    try {
+      await adminService.updateOrderStatus(orderId, status);
+      setOrders(orders.map(order => 
+        order.id === orderId ? { ...order, status } : order
+      ));
+      setError(null);
+    } catch (err) {
+      console.error('Error updating order status:', err);
+      setError('Failed to update order status. Please try again.');
+    }
+  };
+
+  if (loading) {
+    return (
+      <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+        <CircularProgress />
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 5 }}>
       <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'medium' }}>
         Admin Dashboard
       </Typography>
+
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
+
+      {stats && (
+        <Grid container spacing={3} sx={{ mb: 4 }}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Paper sx={{ p: 2, textAlign: 'center' }}>
+              <Typography variant="h6">Total Orders</Typography>
+              <Typography variant="h4">{stats.totalOrders}</Typography>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Paper sx={{ p: 2, textAlign: 'center' }}>
+              <Typography variant="h6">Total Revenue</Typography>
+              <Typography variant="h4">${stats.totalRevenue}</Typography>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Paper sx={{ p: 2, textAlign: 'center' }}>
+              <Typography variant="h6">Total Products</Typography>
+              <Typography variant="h4">{stats.totalProducts}</Typography>
+            </Paper>
+          </Grid>
+          <Grid item xs={12} sm={6} md={3}>
+            <Paper sx={{ p: 2, textAlign: 'center' }}>
+              <Typography variant="h6">Total Users</Typography>
+              <Typography variant="h4">{stats.totalUsers}</Typography>
+            </Paper>
+          </Grid>
+        </Grid>
+      )}
 
       <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
         <Tabs value={tabValue} onChange={handleTabChange} aria-label="admin tabs">
@@ -252,94 +340,6 @@ function Admin() {
               </TableBody>
             </Table>
           </TableContainer>
-
-          {/* Product Dialog */}
-          <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="md" fullWidth>
-            <DialogTitle>{isEditing ? 'Edit Product' : 'Add New Product'}</DialogTitle>
-            <DialogContent>
-              <Grid container spacing={2} sx={{ mt: 1 }}>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    name="name"
-                    label="Product Name"
-                    fullWidth
-                    value={currentProduct.name}
-                    onChange={handleInputChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <FormControl fullWidth>
-                    <InputLabel>Category</InputLabel>
-                    <Select
-                      name="category"
-                      value={currentProduct.category}
-                      label="Category"
-                      onChange={handleInputChange}
-                    >
-                      <MenuItem value="Electronics">Electronics</MenuItem>
-                      <MenuItem value="Clothing">Clothing</MenuItem>
-                      <MenuItem value="Home">Home</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    name="price"
-                    label="Price"
-                    type="number"
-                    fullWidth
-                    value={currentProduct.price}
-                    onChange={handleInputChange}
-                  />
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <TextField
-                    name="stock"
-                    label="Stock"
-                    type="number"
-                    fullWidth
-                    value={currentProduct.stock}
-                    onChange={handleInputChange}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    name="image"
-                    label="Image URL"
-                    fullWidth
-                    value={currentProduct.image}
-                    onChange={handleInputChange}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    name="description"
-                    label="Description"
-                    multiline
-                    rows={4}
-                    fullWidth
-                    value={currentProduct.description}
-                    onChange={handleInputChange}
-                  />
-                </Grid>
-              </Grid>
-            </DialogContent>
-            <DialogActions>
-              <Button onClick={handleCloseDialog}>Cancel</Button>
-              <Button 
-                onClick={handleSaveProduct}
-                variant="contained"
-                sx={{ 
-                  backgroundColor: '#000',
-                  '&:hover': {
-                    backgroundColor: '#333',
-                  }
-                }}
-              >
-                Save
-              </Button>
-            </DialogActions>
-          </Dialog>
         </>
       )}
 
@@ -349,7 +349,6 @@ function Admin() {
           <Typography variant="h5" component="h2" sx={{ mb: 3 }}>
             Order Management
           </Typography>
-
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="orders table">
               <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
@@ -357,9 +356,9 @@ function Admin() {
                   <StyledTableCell>Order ID</StyledTableCell>
                   <StyledTableCell>Customer</StyledTableCell>
                   <StyledTableCell>Date</StyledTableCell>
+                  <StyledTableCell>Total</StyledTableCell>
                   <StyledTableCell>Status</StyledTableCell>
-                  <StyledTableCell align="right">Total</StyledTableCell>
-                  <StyledTableCell align="center">Actions</StyledTableCell>
+                  <StyledTableCell>Actions</StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -367,21 +366,25 @@ function Admin() {
                   <StyledTableRow key={order.id}>
                     <TableCell>{order.id}</TableCell>
                     <TableCell>{order.customer}</TableCell>
-                    <TableCell>{order.date}</TableCell>
-                    <TableCell>{order.status}</TableCell>
-                    <TableCell align="right">${order.total}</TableCell>
-                    <TableCell align="center">
+                    <TableCell>{new Date(order.date).toLocaleDateString()}</TableCell>
+                    <TableCell>${order.total}</TableCell>
+                    <TableCell>
+                      <FormControl size="small" fullWidth>
+                        <Select
+                          value={order.status}
+                          onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
+                        >
+                          <MenuItem value="Processing">Processing</MenuItem>
+                          <MenuItem value="Shipped">Shipped</MenuItem>
+                          <MenuItem value="Delivered">Delivered</MenuItem>
+                          <MenuItem value="Cancelled">Cancelled</MenuItem>
+                        </Select>
+                      </FormControl>
+                    </TableCell>
+                    <TableCell>
                       <Button 
-                        size="small" 
-                        variant="outlined"
-                        sx={{ 
-                          borderColor: '#000',
-                          color: '#000',
-                          '&:hover': {
-                            borderColor: '#333',
-                            backgroundColor: 'rgba(0,0,0,0.04)',
-                          }
-                        }}
+                        size="small"
+                        onClick={() => navigate(`/admin/orders/${order.id}`)}
                       >
                         View Details
                       </Button>
@@ -393,6 +396,106 @@ function Admin() {
           </TableContainer>
         </>
       )}
+
+      {/* Product Dialog */}
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+        <DialogTitle>{isEditing ? 'Edit Product' : 'Add New Product'}</DialogTitle>
+        <DialogContent>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2, mt: 1 }}>
+              {error}
+            </Alert>
+          )}
+          <Grid container spacing={2} sx={{ mt: 1 }}>
+            <Grid item xs={12}>
+              <TextField
+                name="name"
+                label="Product Name"
+                value={currentProduct.name || ''}
+                onChange={handleInputChange}
+                fullWidth
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                name="price"
+                label="Price"
+                type="number"
+                value={currentProduct.price || ''}
+                onChange={handleInputChange}
+                fullWidth
+                required
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                name="stock"
+                label="Stock"
+                type="number"
+                value={currentProduct.stock || ''}
+                onChange={handleInputChange}
+                fullWidth
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <FormControl fullWidth required>
+                <InputLabel>Category</InputLabel>
+                <Select
+                  name="category"
+                  value={currentProduct.category || ''}
+                  onChange={handleInputChange}
+                  label="Category"
+                >
+                  <MenuItem value="Electronics">Electronics</MenuItem>
+                  <MenuItem value="Clothing">Clothing</MenuItem>
+                  <MenuItem value="Home">Home</MenuItem>
+                  <MenuItem value="Books">Books</MenuItem>
+                  <MenuItem value="Sports">Sports</MenuItem>
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="image"
+                label="Image URL"
+                value={currentProduct.image || ''}
+                onChange={handleInputChange}
+                fullWidth
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                name="description"
+                label="Description"
+                value={currentProduct.description || ''}
+                onChange={handleInputChange}
+                fullWidth
+                multiline
+                rows={4}
+                required
+              />
+            </Grid>
+          </Grid>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button 
+            onClick={handleSaveProduct}
+            variant="contained"
+            sx={{ 
+              backgroundColor: '#000',
+              '&:hover': {
+                backgroundColor: '#333',
+              }
+            }}
+          >
+            {isEditing ? 'Update' : 'Add'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 }

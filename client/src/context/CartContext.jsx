@@ -1,22 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { cartService, userService } from '../services';
 
-// Initial cart items - in a real app, this might come from localStorage or be empty
-const initialCartItems = [
-  {
-    id: 1,
-    name: 'Product 1',
-    price: 199,
-    quantity: 2,
-    image: 'https://via.placeholder.com/300x200',
-  },
-  {
-    id: 3,
-    name: 'Product 3',
-    price: 399,
-    quantity: 1,
-    image: 'https://via.placeholder.com/300x200',
-  }
-];
+// Initial cart items - empty array as we'll fetch from API
+const initialCartItems = [];
 
 // Create context
 const CartContext = createContext();
@@ -28,15 +14,50 @@ export const useCart = () => {
 
 // Provider component
 export const CartProvider = ({ children }) => {
-  const [cartItems, setCartItems] = useState(() => {
-    // Try to get cart from localStorage on initial load
-    const savedCart = localStorage.getItem('cart');
-    return savedCart ? JSON.parse(savedCart) : initialCartItems;
-  });
-  
+  const [cartItems, setCartItems] = useState(initialCartItems);
   const [cartOpen, setCartOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  
+  const currentUser = userService.getCurrentUser();
+  const userId = currentUser ? currentUser.id : null;
 
-  // Save to localStorage whenever cart changes
+  // Fetch cart from API on component mount and when userId changes
+  useEffect(() => {
+    const fetchCart = async () => {
+      if (!userId) {
+        // If no user is logged in, try to get cart from localStorage
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
+          setCartItems(JSON.parse(savedCart));
+        }
+        return;
+      }
+      
+      setLoading(true);
+      setError(null);
+      
+      try {
+        const cartData = await cartService.getCart(userId);
+        setCartItems(cartData.items || []);
+      } catch (err) {
+        console.error('Failed to fetch cart:', err);
+        setError('Failed to load your cart. Please try again.');
+        
+        // Fallback to localStorage if API fails
+        const savedCart = localStorage.getItem('cart');
+        if (savedCart) {
+          setCartItems(JSON.parse(savedCart));
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchCart();
+  }, [userId]);
+
+  // Save to localStorage whenever cart changes (as a backup)
   useEffect(() => {
     localStorage.setItem('cart', JSON.stringify(cartItems));
   }, [cartItems]);
@@ -48,13 +69,12 @@ export const CartProvider = ({ children }) => {
   const cartItemCount = cartItems.reduce((count, item) => count + item.quantity, 0);
 
   // Cart functions
-  const addToCart = (product, quantity = 1) => {
+  const addToCart = async (product, quantity = 1) => {
+    // Optimistic UI update
     setCartItems(prevItems => {
-      // Check if item already exists in cart
       const existingItemIndex = prevItems.findIndex(item => item.id === product.id);
       
       if (existingItemIndex >= 0) {
-        // Item exists, update quantity
         const updatedItems = [...prevItems];
         updatedItems[existingItemIndex] = {
           ...updatedItems[existingItemIndex],
@@ -62,7 +82,6 @@ export const CartProvider = ({ children }) => {
         };
         return updatedItems;
       } else {
-        // Item doesn't exist, add new item
         return [...prevItems, { 
           id: product.id,
           name: product.name,
@@ -73,28 +92,69 @@ export const CartProvider = ({ children }) => {
       }
     });
     
-    // Removed automatic drawer opening for better UX
+    // If user is logged in, sync with API
+    if (userId) {
+      try {
+        await cartService.addToCart(userId, product.id, quantity);
+      } catch (err) {
+        console.error('Failed to add item to cart:', err);
+        // You could revert the optimistic update here if needed
+      }
+    }
   };
 
-  const removeFromCart = (productId) => {
+  const removeFromCart = async (productId) => {
+    // Optimistic UI update
     setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
+    
+    // If user is logged in, sync with API
+    if (userId) {
+      try {
+        await cartService.removeFromCart(userId, productId);
+      } catch (err) {
+        console.error('Failed to remove item from cart:', err);
+        // You could revert the optimistic update here if needed
+      }
+    }
   };
 
-  const updateQuantity = (productId, quantity) => {
+  const updateQuantity = async (productId, quantity) => {
     if (quantity <= 0) {
       removeFromCart(productId);
       return;
     }
     
+    // Optimistic UI update
     setCartItems(prevItems => 
       prevItems.map(item => 
         item.id === productId ? { ...item, quantity } : item
       )
     );
+    
+    // If user is logged in, sync with API
+    if (userId) {
+      try {
+        await cartService.updateCartItem(userId, productId, quantity);
+      } catch (err) {
+        console.error('Failed to update cart item quantity:', err);
+        // You could revert the optimistic update here if needed
+      }
+    }
   };
 
-  const clearCart = () => {
+  const clearCart = async () => {
+    // Optimistic UI update
     setCartItems([]);
+    
+    // If user is logged in, sync with API
+    if (userId) {
+      try {
+        await cartService.clearCart(userId);
+      } catch (err) {
+        console.error('Failed to clear cart:', err);
+        // You could revert the optimistic update here if needed
+      }
+    }
   };
 
   const toggleCart = () => {
@@ -109,6 +169,8 @@ export const CartProvider = ({ children }) => {
     subtotal,
     shipping,
     total,
+    loading,
+    error,
     addToCart,
     removeFromCart,
     updateQuantity,

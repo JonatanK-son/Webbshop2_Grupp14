@@ -1,62 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Box, Typography, Grid, Card, CardContent, CardMedia, CardActionArea, Button, 
   TextField, InputAdornment, FormControl, InputLabel, Select, MenuItem, Container, Snackbar, Alert } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import { useCart } from '../context/CartContext';
-
-// Sample product data - in a real app, this would come from an API
-const sampleProducts = [
-  {
-    id: 1,
-    name: 'Product 1',
-    price: 199,
-    category: 'Electronics',
-    image: 'https://via.placeholder.com/300x200',
-    description: 'This is a description of product 1'
-  },
-  {
-    id: 2,
-    name: 'Product 2',
-    price: 299,
-    category: 'Clothing',
-    image: 'https://via.placeholder.com/300x200',
-    description: 'This is a description of product 2'
-  },
-  {
-    id: 3,
-    name: 'Product 3',
-    price: 399,
-    category: 'Home',
-    image: 'https://via.placeholder.com/300x200',
-    description: 'This is a description of product 3'
-  },
-  {
-    id: 4,
-    name: 'Product 4',
-    price: 499,
-    category: 'Electronics',
-    image: 'https://via.placeholder.com/300x200',
-    description: 'This is a description of product 4'
-  },
-  {
-    id: 5,
-    name: 'Product 5',
-    price: 599,
-    category: 'Clothing',
-    image: 'https://via.placeholder.com/300x200',
-    description: 'This is a description of product 5'
-  },
-  {
-    id: 6,
-    name: 'Product 6',
-    price: 699,
-    category: 'Home',
-    image: 'https://via.placeholder.com/300x200',
-    description: 'This is a description of product 6'
-  }
-];
+import api from '../services/api';
 
 const StyledCard = styled(Card)(({ theme }) => ({
   height: '100%',
@@ -86,11 +35,38 @@ function Products() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [category, setCategory] = useState('all');
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [categories, setCategories] = useState(['All']);
 
   // Use cart context
   const { addToCart, toggleCart } = useCart();
+
+  // Fetch products from the API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get('/products');
+        setProducts(response.data);
+        
+        // Extract unique categories
+        const uniqueCategories = [...new Set(response.data.map(product => product.category))];
+        setCategories(['All', ...uniqueCategories]);
+        
+        setLoading(false);
+      } catch (err) {
+        console.error('Error fetching products:', err);
+        setError('Failed to load products. Please try again later.');
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   const handleAddToCart = (product, e) => {
     e.stopPropagation();
@@ -111,10 +87,10 @@ function Products() {
   };
 
   // Filter and sort products
-  const filteredProducts = sampleProducts
+  const filteredProducts = products
     .filter(product => {
       const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           product.description.toLowerCase().includes(searchTerm.toLowerCase());
+                           (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
       const matchesCategory = category === 'all' || product.category === category;
       return matchesSearch && matchesCategory;
     })
@@ -123,6 +99,22 @@ function Products() {
       if (sortBy === 'price-high') return b.price - a.price;
       return a.name.localeCompare(b.name); // Default sort by name
     });
+
+  if (loading) {
+    return (
+      <Container maxWidth="xl" sx={{ mt: 2, mb: 3, minHeight: '50vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Typography>Loading products...</Typography>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container maxWidth="xl" sx={{ mt: 2, mb: 3, minHeight: '50vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Alert severity="error">{error}</Alert>
+      </Container>
+    );
+  }
 
   return (
     <Container maxWidth="xl" sx={{ mt: 2, mb: 3 }}>
@@ -141,9 +133,9 @@ function Products() {
               onChange={(e) => setCategory(e.target.value)}
             >
               <MenuItem value="all">All</MenuItem>
-              <MenuItem value="Electronics">Electronics</MenuItem>
-              <MenuItem value="Clothing">Clothing</MenuItem>
-              <MenuItem value="Home">Home</MenuItem>
+              {categories.filter(cat => cat !== 'All').map(cat => (
+                <MenuItem key={cat} value={cat}>{cat}</MenuItem>
+              ))}
             </Select>
           </FormControl>
           
@@ -193,7 +185,7 @@ function Products() {
                   <CardMedia
                     component="img"
                     height="140"
-                    image={product.image}
+                    image={product.image || 'https://via.placeholder.com/300x200'}
                     alt={product.name}
                   />
                   <CardContent sx={{ p: 1, pb: 0.5 }}>

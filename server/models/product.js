@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
             primaryKey: true,
             autoIncrement: true
         },
-        title: {
+        name: {
             type: DataTypes.STRING(100),
             allowNull: false,
             validate: {
@@ -20,7 +20,16 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.DOUBLE,
             allowNull: false
         },
-        imageUrl: {
+        category: {
+            type: DataTypes.STRING(50),
+            allowNull: false
+        },
+        stock: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+            defaultValue: 0
+        },
+        image: {
             type: DataTypes.STRING(255)
         }
     });
