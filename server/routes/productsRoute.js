@@ -1,5 +1,15 @@
 const router = require('express').Router();
 const db = require('../models');
+const db validate = require('validate.js');
+
+const constraints = {
+    title: {
+        minimum: 2,
+        maximum: 100,
+        tooShort: '^The product name must be at least %{count} characters long.'
+        tooLong: '^The product can not be longer than &{count} characters long.'
+    }
+}
 
 router.get('/', (req, res) => {
     db.products.findAll().then((result) => {
@@ -8,6 +18,7 @@ router.get('/', (req, res) => {
 });
 
 router.post('/', (req, res) => {
+    
     db.products.create(req.body).then(result => {
         res.send(result);
     });
