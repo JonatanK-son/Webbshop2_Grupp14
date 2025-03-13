@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Box, Typography, Grid, Card, CardContent, CardMedia, CardActionArea, Button, 
-  TextField, InputAdornment, FormControl, InputLabel, Select, MenuItem, Container, Snackbar, Alert } from '@mui/material';
+  TextField, InputAdornment, FormControl, InputLabel, Select, MenuItem, Container } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
-import { useCart } from '../context/CartContext';
+import AddToCartButton from "../components/AddToCartButton";
 
 // Sample product data - in a real app, this would come from an API
 const sampleProducts = [
@@ -86,25 +86,6 @@ function Products() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [category, setCategory] = useState('all');
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
-
-  // Use cart context
-  const { addToCart, toggleCart } = useCart();
-
-  const handleAddToCart = (product, e) => {
-    e.stopPropagation();
-    addToCart(product);
-    setSnackbarMessage(`${product.name} added to cart`);
-    setSnackbarOpen(true);
-  };
-
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSnackbarOpen(false);
-  };
 
   const handleProductClick = (productId) => {
     navigate(`/products/${productId}`);
@@ -209,56 +190,13 @@ function Products() {
                   </CardContent>
                 </CardActionArea>
                 <Box sx={{ p: 1, pt: 0 }}>
-                  <Button 
-                    variant="contained" 
-                    fullWidth
-                    size="small"
-                    onClick={(e) => handleAddToCart(product, e)}
-                    sx={{ 
-                      backgroundColor: '#000',
-                      '&:hover': {
-                        backgroundColor: '#333',
-                      },
-                      py: 0.5,
-                      mt: 0.5
-                    }}
-                  >
-                    Add to Cart
-                  </Button>
+                  <AddToCartButton product={product}/>
                 </Box>
               </StyledCard>
             </Grid>
           ))}
         </Grid>
       )}
-
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert 
-          onClose={handleSnackbarClose} 
-          severity="success" 
-          variant="filled" 
-          sx={{ width: '100%' }}
-          action={
-            <Button 
-              color="inherit" 
-              size="small" 
-              onClick={() => {
-                toggleCart();
-                setSnackbarOpen(false);
-              }}
-            >
-              VIEW CART
-            </Button>
-          }
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
     </Container>
   );
 }
