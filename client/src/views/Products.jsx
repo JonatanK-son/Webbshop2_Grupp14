@@ -87,8 +87,9 @@ function Products() {
   const [sortBy, setSortBy] = useState('name');
   const [category, setCategory] = useState('all');
 
-  const handleProductClick = (productId) => {
-    navigate(`/products/${productId}`);
+  const handleProductClick = (product) => {
+    console.log("Product clicked: ", product);
+    navigate(`/products/${product.id}`, { state: { product } });
   };
 
   // Filter and sort products
@@ -170,7 +171,7 @@ function Products() {
           {filteredProducts.map((product) => (
             <Grid item xs={6} sm={4} md={3} lg={2} key={product.id}>
               <StyledCard elevation={0}>
-                <CardActionArea onClick={() => handleProductClick(product.id)}>
+                <CardActionArea onClick={() => handleProductClick(product)}>
                   <CardMedia
                     component="img"
                     height="140"

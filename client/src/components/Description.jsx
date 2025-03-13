@@ -1,41 +1,40 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  IconButton,
-  Paper,
-  Stack,
-  Divider,
-} from "@mui/material";
+import { Box, Typography, IconButton, Paper, Stack, Divider } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddToCartButton from "../components/AddToCartButton";
+import { useLocation } from "react-router-dom";
 
 const Description = () => {
+  // Get the product data passed from the previous page (via navigate)
+  const location = useLocation();
+  const { product } = location.state || {}; // Get the product object from state
+
+  // If product is not found, show an error
+  if (!product) {
+    return <Typography variant="h6">Product not found</Typography>;
+  }
+
   const [quantity, setQuantity] = useState(1);
 
   const handleAdd = () => setQuantity((prev) => prev + 1);
   const handleRemove = () => setQuantity((prev) => Math.max(1, prev - 1));
 
-  // Define the product object
-  const product = {
-    id: 7,
-    name: "Fall Limited Edition Sneakers",
-    price: 125.0,
-    category: "Shoes",
-    image: "https://via.placeholder.com/300x200",
-    description:
-      "These low-profile sneakers are your perfect casual wear companion. Featuring a durable rubber outer sole, they’ll withstand everything the weather can offer.",
-  };
-
   return (
-    <Paper elevation={3} sx={{ padding: 3, maxWidth: 400, margin: "auto" }}>
-      {/* Title */}
+    <Paper elevation={3} sx={{ padding: 3, maxWidth: 600, margin: "auto" }}>
+      {/* Product Title */}
       <Typography variant="h5" fontWeight="bold" gutterBottom>
         {product.name}
       </Typography>
 
-      {/* Description */}
+      {/* Product Image */}
+      <img
+        src={product.image}
+        alt={product.name}
+        style={{ width: "100%", height: "auto", borderRadius: 8 }}
+      />
+
+      {/* Product Description */}
       <Typography variant="body2" color="text.secondary" paragraph>
         {product.description}
       </Typography>
@@ -49,7 +48,7 @@ const Description = () => {
 
       <Divider sx={{ my: 2 }} />
 
-      {/* Quantity and Add to Cart */}
+      {/* Quantity Controls and Add to Cart */}
       <Stack direction="row" spacing={2} alignItems="center">
         <Stack
           direction="row"
