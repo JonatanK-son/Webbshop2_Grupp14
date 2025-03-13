@@ -1,11 +1,13 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import './index.css'
+import './styles/index.css'
 import App from './App.jsx'
 import Home from './views/Home.jsx'
 import ProductDetails from './views/ProductDetails.jsx'
 import ProductEdit from './views/ProductEdit.jsx'
 import Products from './views/Products.jsx'
+import Cart from './views/Cart.jsx'
+import Admin from './views/Admin.jsx'
 import {createBrowserRouter, RouterProvider } from 'react-router-dom' ;
 
 const router = createBrowserRouter([
@@ -26,9 +28,17 @@ const router = createBrowserRouter([
         element: <Products /> 
       },
       { 
-        path: '/products/1', 
+        path: '/products/:id', 
         element: <ProductDetails /> 
       },
+      {
+        path: '/cart',
+        element: <Cart />
+      },
+      {
+        path: '/admin',
+        element: <Admin />
+      }
     ]
   }
 ]);
