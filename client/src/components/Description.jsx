@@ -68,7 +68,7 @@ const Description = () => {
         </Stack>
 
         <Box sx={{ p: 1, pt: 0 }}>
-          <AddToCartButton product={product} />
+          <AddToCartButton product={product} quantity={quantity} />
         </Box>
       </Stack>
     </Paper>

@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { Button, Snackbar, Alert } from "@mui/material";
 import { useCart } from "../context/CartContext";
 
-const AddToCartButton = ({ product }) => {
+const AddToCartButton = ({ product, quantity }) => {
   const { addToCart, toggleCart } = useCart();
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMessage, setSnackbarMessage] = useState("");
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
-    addToCart({product});
+    addToCart(product, quantity);
     setSnackbarMessage(`${product.name} added to cart`);
     setSnackbarOpen(true);
   };

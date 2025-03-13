@@ -1,29 +1,22 @@
 import React, { useState } from "react";
 import { Container } from "@mui/material";
-import Gallery from "../components/Gallery";
 import Description from "../components/Description";
 
 function ProductDetails() {
-    const [quant, setQuant] = useState(0);
+  const [quant, setQuant] = useState(1); // Start with 1 to avoid issues
   const [orderedQuant, setOrderedQuant] = useState(0);
 
-  const addQuant = () => {
-    setQuant(quant + 1);
-  };
-
-  const removeQuant = () => {
-    setQuant(quant - 1);
-  };
-
+  const addQuant = () => setQuant(quant + 1);
+  const removeQuant = () => setQuant(Math.max(1, quant - 1)); // Prevent going below 1
   const resetQuant = () => {
-    setQuant(0);
+    setQuant(1); // Reset to 1 or desired default quantity
     setOrderedQuant(0);
   };
-    return ( 
+
+  return (
     <main className="App">
       <Container component="section" maxWidth={"lg"}>
         <section className="core">
-{/*           <Gallery /> */}
           <Description
             onQuant={quant}
             onAdd={addQuant}
@@ -33,7 +26,7 @@ function ProductDetails() {
         </section>
       </Container>
     </main>
-     );
+  );
 }
 
 export default ProductDetails;
