@@ -61,11 +61,6 @@ const StyledCard = styled(Card)(({ theme }) => ({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
-  transition: 'transform 0.15s ease-in-out',
-  '&:hover': {
-    transform: 'translateY(-3px)',
-    boxShadow: theme.shadows[2],
-  }
 }));
 
 const PriceTypography = styled(Typography)(({ theme }) => ({
@@ -88,6 +83,13 @@ function Products() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [category, setCategory] = useState('all');
+
+  // Add cart context or state management here in a real app
+  const handleAddToCart = (product) => {
+    // In a real app, this would add the product to cart state/context
+    console.log('Added to cart:', product);
+    // You would then update the cart state in App.jsx
+  };
 
   const handleProductClick = (productId) => {
     navigate(`/products/${productId}`);
@@ -196,6 +198,7 @@ function Products() {
                     variant="contained" 
                     fullWidth
                     size="small"
+                    onClick={() => handleAddToCart(product)}
                     sx={{ 
                       backgroundColor: '#000',
                       '&:hover': {
