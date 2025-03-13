@@ -1,11 +1,17 @@
 'use strict';
 
+// Load environment variables from .env file
+require('dotenv').config();
+
 const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
-const env = process.env.NODE_ENV || 'development';
+// Check for Railway environment first, otherwise fall back to NODE_ENV or development
+const env = process.env.RAILWAY_ENVIRONMENT 
+  ? 'railway' 
+  : (process.env.NODE_ENV || 'development');
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 

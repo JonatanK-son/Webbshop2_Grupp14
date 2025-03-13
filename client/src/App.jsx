@@ -119,7 +119,7 @@ function App() {
             }}
             onClick={() => navigate('/')}
           >
-            WEBBSHOP
+            WEBSHOP
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Button 
@@ -165,26 +165,23 @@ function App() {
       <Collapse in={menuOpen}>
         <StyledMenu>
           <MenuContainer>
-            {menuItems.map((item, index) => (
-              <Button 
-                key={index}
-                onClick={() => {
-                  navigate(item.path);
-                  setMenuOpen(false);
-                }}
-                sx={{ 
-                  color: '#333',
-                  fontWeight: 'medium',
-                  fontSize: '1rem',
-                  '&:hover': {
-                    backgroundColor: 'transparent',
-                    color: '#000'
-                  }
-                }}
-              >
-                {item.name}
-              </Button>
-            ))}
+            <Collapse in={menuOpen} timeout="auto" unmountOnExit sx={{ width: '100%' }}>
+              <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'center', gap: 2 }}>
+                {menuItems.map((item) => (
+                  <Button
+                    key={item.name}
+                    component={Link}
+                    to={item.path}
+                    sx={{
+                      color: location.pathname === item.path ? 'primary.main' : 'text.primary',
+                      fontWeight: location.pathname === item.path ? 'bold' : 'regular',
+                    }}
+                  >
+                    {item.name}
+                  </Button>
+                ))}
+              </Box>
+            </Collapse>
           </MenuContainer>
         </StyledMenu>
       </Collapse>

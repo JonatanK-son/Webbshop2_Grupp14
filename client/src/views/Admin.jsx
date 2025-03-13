@@ -76,9 +76,14 @@ function Admin() {
           return;
         }
         
-        // You might want to verify the admin status with the backend
-        const userProfile = await userService.getUserProfile(currentUser.id);
-        if (userProfile.role !== 'admin') {
+        try {
+          const userProfile = await userService.getUserProfile(currentUser.id);
+          if (userProfile.role !== 'admin') {
+            navigate('/');
+          }
+          setLoading(false);
+        } catch (profileErr) {
+          console.error('Error fetching user profile:', profileErr);
           navigate('/');
         }
       } catch (err) {

@@ -1,17 +1,22 @@
 import axios from 'axios';
 
+// Get the base URL from environment variables or use the default
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+console.log('API URL:', API_URL);
+
 // Create an Axios instance with default config
 const api = axios.create({
-  baseURL: 'http://localhost:5000/api',
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Add a request interceptor for authentication if needed
+// Add a request interceptor for authentication
 api.interceptors.request.use(
   (config) => {
-    // You can add auth token here if needed
+    // Add auth token if available
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -38,7 +43,6 @@ api.interceptors.response.use(
       if (error.response.status === 401) {
         // Handle unauthorized access
         console.log('Unauthorized access');
-        // You might want to redirect to login page
       }
     } else if (error.request) {
       // Request was made but no response was received
