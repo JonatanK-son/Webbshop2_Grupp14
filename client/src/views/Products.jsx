@@ -61,6 +61,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
+  borderRadius: 0,
 }));
 
 const PriceTypography = styled(Typography)(({ theme }) => ({
@@ -72,9 +73,10 @@ const FilterContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
   gap: theme.spacing(2),
-  marginBottom: theme.spacing(3),
+  marginBottom: theme.spacing(2),
   [theme.breakpoints.down('sm')]: {
     flexDirection: 'column',
+    gap: theme.spacing(1),
   }
 }));
 
@@ -110,14 +112,14 @@ function Products() {
     });
 
   return (
-    <Container maxWidth="xl" sx={{ mt: 3, mb: 5 }}>
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5" sx={{ fontWeight: 'medium', color: '#333' }}>
+    <Container maxWidth="xl" sx={{ mt: 2, mb: 3 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h6" sx={{ fontWeight: 'medium', color: '#333' }}>
           All Products
         </Typography>
         
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          <FormControl size="small" sx={{ minWidth: 120 }}>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <FormControl size="small" sx={{ minWidth: 100 }}>
             <InputLabel id="category-label">Category</InputLabel>
             <Select
               labelId="category-label"
@@ -125,14 +127,14 @@ function Products() {
               label="Category"
               onChange={(e) => setCategory(e.target.value)}
             >
-              <MenuItem value="all">All Categories</MenuItem>
+              <MenuItem value="all">All</MenuItem>
               <MenuItem value="Electronics">Electronics</MenuItem>
               <MenuItem value="Clothing">Clothing</MenuItem>
               <MenuItem value="Home">Home</MenuItem>
             </Select>
           </FormControl>
           
-          <FormControl size="small" sx={{ minWidth: 120 }}>
+          <FormControl size="small" sx={{ minWidth: 100 }}>
             <InputLabel id="sort-label">Sort By</InputLabel>
             <Select
               labelId="sort-label"
@@ -141,15 +143,15 @@ function Products() {
               onChange={(e) => setSortBy(e.target.value)}
             >
               <MenuItem value="name">Name</MenuItem>
-              <MenuItem value="price-low">Price: Low to High</MenuItem>
-              <MenuItem value="price-high">Price: High to Low</MenuItem>
+              <MenuItem value="price-low">Price: Low-High</MenuItem>
+              <MenuItem value="price-high">Price: High-Low</MenuItem>
             </Select>
           </FormControl>
         </Box>
       </Box>
       
       <TextField
-        label="Search Products"
+        placeholder="Search products..."
         variant="outlined"
         size="small"
         fullWidth
@@ -158,31 +160,31 @@ function Products() {
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
-              <SearchIcon />
+              <SearchIcon fontSize="small" />
             </InputAdornment>
           ),
         }}
-        sx={{ mb: 3 }}
+        sx={{ mb: 2 }}
       />
       
       {filteredProducts.length === 0 ? (
-        <Typography variant="h6" sx={{ textAlign: 'center', my: 4 }}>
+        <Typography variant="body1" sx={{ textAlign: 'center', my: 3 }}>
           No products found matching your criteria.
         </Typography>
       ) : (
-        <Grid container spacing={2}>
+        <Grid container spacing={1}>
           {filteredProducts.map((product) => (
-            <Grid item xs={12} sm={6} md={3} lg={2.4} key={product.id}>
-              <StyledCard>
+            <Grid item xs={6} sm={4} md={3} lg={2} key={product.id}>
+              <StyledCard elevation={0}>
                 <CardActionArea onClick={() => handleProductClick(product.id)}>
                   <CardMedia
                     component="img"
-                    height="160"
+                    height="140"
                     image={product.image}
                     alt={product.name}
                   />
-                  <CardContent sx={{ p: 1.5, pb: 1 }}>
-                    <Typography gutterBottom variant="subtitle1" component="div" noWrap>
+                  <CardContent sx={{ p: 1, pb: 0.5 }}>
+                    <Typography gutterBottom variant="body2" component="div" noWrap sx={{ fontWeight: 'medium' }}>
                       {product.name}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
@@ -198,12 +200,17 @@ function Products() {
                     variant="contained" 
                     fullWidth
                     size="small"
-                    onClick={() => handleAddToCart(product)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleAddToCart(product);
+                    }}
                     sx={{ 
                       backgroundColor: '#000',
                       '&:hover': {
                         backgroundColor: '#333',
-                      }
+                      },
+                      py: 0.5,
+                      mt: 0.5
                     }}
                   >
                     Add to Cart

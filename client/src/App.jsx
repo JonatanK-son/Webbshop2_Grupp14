@@ -56,7 +56,7 @@ const CartDrawerHeader = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'space-between',
-  padding: theme.spacing(2),
+  padding: theme.spacing(1, 2),
   borderBottom: '1px solid #e0e0e0',
 }));
 
@@ -64,7 +64,7 @@ const TotalContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   justifyContent: 'space-between',
   alignItems: 'center',
-  padding: theme.spacing(2),
+  padding: theme.spacing(0.5, 2),
 }));
 
 function App() {
@@ -207,29 +207,30 @@ function App() {
         onClose={handleCartToggle}
         sx={{
           '& .MuiDrawer-paper': {
-            width: { xs: '100%', sm: 400 },
+            width: { xs: '100%', sm: 350 },
             boxSizing: 'border-box',
           },
         }}
       >
         <CartDrawerHeader>
-          <Typography variant="h6">Your Cart ({cartItemCount} items)</Typography>
-          <IconButton onClick={handleCartToggle}>
-            <CloseIcon />
+          <Typography variant="subtitle1" sx={{ fontWeight: 'medium' }}>Your Cart ({cartItemCount})</Typography>
+          <IconButton size="small" onClick={handleCartToggle}>
+            <CloseIcon fontSize="small" />
           </IconButton>
         </CartDrawerHeader>
         
         {cartItems.length === 0 ? (
-          <Box sx={{ p: 3, textAlign: 'center' }}>
-            <Typography variant="body1">Your cart is empty</Typography>
+          <Box sx={{ p: 2, textAlign: 'center' }}>
+            <Typography variant="body2">Your cart is empty</Typography>
             <Button 
               variant="contained" 
+              size="small"
               onClick={() => {
                 navigate('/products');
                 handleCartToggle();
               }}
               sx={{ 
-                mt: 2,
+                mt: 1.5,
                 backgroundColor: '#000',
                 '&:hover': {
                   backgroundColor: '#333',
@@ -241,13 +242,14 @@ function App() {
           </Box>
         ) : (
           <>
-            <List sx={{ flexGrow: 1, overflow: 'auto' }}>
+            <List sx={{ flexGrow: 1, overflow: 'auto', py: 0 }}>
               {cartItems.map((item, index) => (
                 <React.Fragment key={item.id}>
                   <ListItem 
+                    dense
                     secondaryAction={
-                      <IconButton edge="end" aria-label="delete" onClick={() => handleRemoveItem(item.id)}>
-                        <DeleteIcon />
+                      <IconButton edge="end" size="small" aria-label="delete" onClick={() => handleRemoveItem(item.id)}>
+                        <DeleteIcon fontSize="small" />
                       </IconButton>
                     }
                   >
@@ -256,20 +258,24 @@ function App() {
                         variant="rounded" 
                         src={item.image} 
                         alt={item.name}
-                        sx={{ width: 60, height: 60, mr: 2 }}
+                        sx={{ width: 40, height: 40, mr: 1 }}
                       />
                     </ListItemAvatar>
                     <ListItemText
-                      primary={item.name}
+                      primary={
+                        <Typography variant="body2" noWrap sx={{ fontWeight: 'medium' }}>
+                          {item.name}
+                        </Typography>
+                      }
                       secondary={
-                        <>
-                          <Typography variant="body2" color="text.secondary">
-                            Quantity: {item.quantity}
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Typography variant="caption" color="text.secondary">
+                            Qty: {item.quantity}
                           </Typography>
-                          <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                            ${item.price} each
+                          <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                            ${item.price}
                           </Typography>
-                        </>
+                        </Box>
                       }
                     />
                   </ListItem>
@@ -281,7 +287,7 @@ function App() {
             <Paper 
               elevation={0} 
               sx={{ 
-                p: 2, 
+                p: 1.5, 
                 borderTop: '1px solid #e0e0e0',
                 position: 'sticky',
                 bottom: 0,
@@ -289,27 +295,28 @@ function App() {
               }}
             >
               <TotalContainer>
-                <Typography variant="body1">Subtotal</Typography>
-                <Typography variant="body1">${subtotal}</Typography>
+                <Typography variant="body2">Subtotal</Typography>
+                <Typography variant="body2">${subtotal}</Typography>
               </TotalContainer>
               
               <TotalContainer>
-                <Typography variant="body1">Shipping</Typography>
-                <Typography variant="body1">${shipping}</Typography>
+                <Typography variant="body2">Shipping</Typography>
+                <Typography variant="body2">${shipping}</Typography>
               </TotalContainer>
               
               <Divider sx={{ my: 1 }} />
               
               <TotalContainer>
-                <Typography variant="h6">Total</Typography>
-                <Typography variant="h6">${total}</Typography>
+                <Typography variant="subtitle2">Total</Typography>
+                <Typography variant="subtitle2">${total}</Typography>
               </TotalContainer>
               
               <Button 
                 variant="contained" 
                 fullWidth 
+                size="small"
                 sx={{ 
-                  mt: 2,
+                  mt: 1.5,
                   backgroundColor: '#000',
                   '&:hover': {
                     backgroundColor: '#333',
