@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Box, Typography, Grid, Card, CardContent, CardMedia, CardActionArea, Button, 
-  TextField, InputAdornment, FormControl, InputLabel, Select, MenuItem, Container } from '@mui/material';
+  TextField, InputAdornment, FormControl, InputLabel, Select, MenuItem, Container, Snackbar, Alert } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
+import { useCart } from '../context/CartContext';
 
 // Sample product data - in a real app, this would come from an API
 const sampleProducts = [
@@ -85,12 +86,24 @@ function Products() {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [category, setCategory] = useState('all');
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
 
-  // Add cart context or state management here in a real app
-  const handleAddToCart = (product) => {
-    // In a real app, this would add the product to cart state/context
-    console.log('Added to cart:', product);
-    // You would then update the cart state in App.jsx
+  // Use cart context
+  const { addToCart, toggleCart } = useCart();
+
+  const handleAddToCart = (product, e) => {
+    e.stopPropagation();
+    addToCart(product);
+    setSnackbarMessage(`${product.name} added to cart`);
+    setSnackbarOpen(true);
+  };
+
+  const handleSnackbarClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setSnackbarOpen(false);
   };
 
   const handleProductClick = (productId) => {
@@ -200,10 +213,7 @@ function Products() {
                     variant="contained" 
                     fullWidth
                     size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleAddToCart(product);
-                    }}
+                    onClick={(e) => handleAddToCart(product, e)}
                     sx={{ 
                       backgroundColor: '#000',
                       '&:hover': {
@@ -221,6 +231,34 @@ function Products() {
           ))}
         </Grid>
       )}
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={3000}
+        onClose={handleSnackbarClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+      >
+        <Alert 
+          onClose={handleSnackbarClose} 
+          severity="success" 
+          variant="filled" 
+          sx={{ width: '100%' }}
+          action={
+            <Button 
+              color="inherit" 
+              size="small" 
+              onClick={() => {
+                toggleCart();
+                setSnackbarOpen(false);
+              }}
+            >
+              VIEW CART
+            </Button>
+          }
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 }

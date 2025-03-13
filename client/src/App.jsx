@@ -7,26 +7,11 @@ import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { useState, useEffect } from 'react';
+import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
+import { useState } from 'react';
 import React from 'react';
-
-// Sample cart items - in a real app, this would come from state or context
-const sampleCartItems = [
-  {
-    id: 1,
-    name: 'Product 1',
-    price: 199,
-    quantity: 2,
-    image: 'https://via.placeholder.com/300x200',
-  },
-  {
-    id: 3,
-    name: 'Product 3',
-    price: 399,
-    quantity: 1,
-    image: 'https://via.placeholder.com/300x200',
-  }
-];
+import { useCart } from './context/CartContext';
 
 const Main = styled('main')(({ theme }) => ({
   flexGrow: 1,
@@ -67,30 +52,34 @@ const TotalContainer = styled(Box)(({ theme }) => ({
   padding: theme.spacing(0.5, 2),
 }));
 
+const QuantityControl = styled(Box)(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  gap: theme.spacing(0.5),
+}));
+
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const [cartItems, setCartItems] = useState(sampleCartItems);
+  
+  // Use cart context instead of local state
+  const { 
+    cartItems, 
+    cartOpen, 
+    cartItemCount, 
+    subtotal, 
+    shipping, 
+    total, 
+    removeFromCart, 
+    updateQuantity, 
+    toggleCart, 
+    setCartOpen 
+  } = useCart();
 
   const handleMenuToggle = () => {
     setMenuOpen(!menuOpen);
   };
-
-  const handleCartToggle = () => {
-    setCartOpen(!cartOpen);
-  };
-
-  const handleRemoveItem = (itemId) => {
-    setCartItems(cartItems.filter(item => item.id !== itemId));
-  };
-
-  // Calculate cart totals
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const shipping = subtotal > 0 ? 10 : 0;
-  const total = subtotal + shipping;
-  const cartItemCount = cartItems.reduce((count, item) => count + item.quantity, 0);
 
   const menuItems = [
     { name: "Home", path: "/" },
@@ -161,7 +150,7 @@ function App() {
             </Button>
             <IconButton 
               color="inherit" 
-              onClick={handleCartToggle} 
+              onClick={toggleCart} 
               sx={{ ml: { xs: 0.5, sm: 1 } }}
             >
               <Badge badgeContent={cartItemCount} color="primary">
@@ -204,7 +193,7 @@ function App() {
       <Drawer
         anchor="right"
         open={cartOpen}
-        onClose={handleCartToggle}
+        onClose={() => setCartOpen(false)}
         sx={{
           '& .MuiDrawer-paper': {
             width: { xs: '100%', sm: 350 },
@@ -214,7 +203,7 @@ function App() {
       >
         <CartDrawerHeader>
           <Typography variant="subtitle1" sx={{ fontWeight: 'medium' }}>Your Cart ({cartItemCount})</Typography>
-          <IconButton size="small" onClick={handleCartToggle}>
+          <IconButton size="small" onClick={() => setCartOpen(false)}>
             <CloseIcon fontSize="small" />
           </IconButton>
         </CartDrawerHeader>
@@ -227,7 +216,7 @@ function App() {
               size="small"
               onClick={() => {
                 navigate('/products');
-                handleCartToggle();
+                setCartOpen(false);
               }}
               sx={{ 
                 mt: 1.5,
@@ -248,7 +237,7 @@ function App() {
                   <ListItem 
                     dense
                     secondaryAction={
-                      <IconButton edge="end" size="small" aria-label="delete" onClick={() => handleRemoveItem(item.id)}>
+                      <IconButton edge="end" size="small" aria-label="delete" onClick={() => removeFromCart(item.id)}>
                         <DeleteIcon fontSize="small" />
                       </IconButton>
                     }
@@ -268,13 +257,29 @@ function App() {
                         </Typography>
                       }
                       secondary={
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          <Typography variant="caption" color="text.secondary">
-                            Qty: {item.quantity}
-                          </Typography>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
                           <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                             ${item.price}
                           </Typography>
+                          <QuantityControl>
+                            <IconButton 
+                              size="small" 
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              sx={{ p: 0.3 }}
+                            >
+                              <RemoveIcon fontSize="small" />
+                            </IconButton>
+                            <Typography variant="caption" sx={{ mx: 0.5 }}>
+                              {item.quantity}
+                            </Typography>
+                            <IconButton 
+                              size="small" 
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              sx={{ p: 0.3 }}
+                            >
+                              <AddIcon fontSize="small" />
+                            </IconButton>
+                          </QuantityControl>
                         </Box>
                       }
                     />

@@ -7,7 +7,8 @@ import ProductDetails from './views/ProductDetails.jsx'
 import ProductEdit from './views/ProductEdit.jsx'
 import Products from './views/Products.jsx'
 import Admin from './views/Admin.jsx'
-import {createBrowserRouter, RouterProvider } from 'react-router-dom' ;
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { CartProvider } from './context/CartContext.jsx';
 
 const router = createBrowserRouter([
   { 
@@ -40,6 +41,8 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <CartProvider>
+      <RouterProvider router={router} />
+    </CartProvider>
   </StrictMode>,
 )
