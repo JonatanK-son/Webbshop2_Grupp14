@@ -169,6 +169,7 @@ function Products() {
                     height="140"
                     image={product.image || 'https://via.placeholder.com/300x200'}
                     alt={product.name}
+                    style={{borderRadius: '8px 8px 0 0'}}
                   />
                   <CardContent sx={{ p: 1, pb: 0.5 }}>
                     <Typography gutterBottom variant="body2" component="div" noWrap sx={{ fontWeight: 'medium' }}>
