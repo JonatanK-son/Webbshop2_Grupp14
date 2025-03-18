@@ -5,9 +5,7 @@ require("dotenv").config(); // Load environment variables from .env file
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 async function generateImage() {
-  const contents = "Hi, can you create a 3d rendered image of a pig " +
-                  "with wings and a top hat flying over a happy " +
-                  "futuristic scifi city with lots of greenery?";
+const contents = `Hi, please generate an image of ${product.description}`;
 
   // Set responseModalities to include "Image" so the model can generate  an image
   const model = genAI.getGenerativeModel({
@@ -26,8 +24,8 @@ async function generateImage() {
       } else if (part.inlineData) {
         const imageData = part.inlineData.data;
         const buffer = Buffer.from(imageData, 'base64');
-        fs.writeFileSync('./images/gemini-native-image.png', buffer);
-        console.log('Image saved as gemini-native-image.png');
+        fs.writeFileSync(`./images/${product.name}.png`, buffer);
+        console.log(`Image saved as ${product.name}.png`);
       }
     }
   } catch (error) {
