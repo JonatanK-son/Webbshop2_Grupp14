@@ -4,8 +4,8 @@ import { Box, Typography, Grid, Card, CardContent, CardMedia, CardActionArea, Bu
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
-import { useCart } from '../context/CartContext';
 import api from '../services/api';
+import AddToCartButton from "../components/AddToCartButton";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   height: '100%',
@@ -39,9 +39,6 @@ function Products() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [categories, setCategories] = useState(['All']);
-
-  // Use cart context
-  const { addToCart, toggleCart } = useCart();
 
   // Fetch products from the API
   useEffect(() => {
@@ -166,7 +163,7 @@ function Products() {
           {filteredProducts.map((product) => (
             <Grid item xs={6} sm={4} md={3} lg={2} key={product.id}>
               <StyledCard elevation={0}>
-                <CardActionArea onClick={() => handleProductClick(product.id)}>
+                <CardActionArea onClick={() => handleProductClick(product)}>
                   <CardMedia
                     component="img"
                     height="140"

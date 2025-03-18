@@ -5,18 +5,32 @@ import RemoveIcon from "@mui/icons-material/Remove";
 import AddToCartButton from "../components/AddToCartButton";
 import { useLocation } from "react-router-dom";
 
-const Description = ({ product, quantity, onAdd, onRemove }) => {
+const Description = () => {
+  // Get the product data passed from the previous page (via navigate)
+  const location = useLocation();
+  const { product } = location.state || {}; // Get the product object from state
 
   // If product is not found, show an error
   if (!product) {
     return <Typography variant="h6">Product not found</Typography>;
   }
 
+  const [quantity, setQuantity] = useState(1);
+
+  const handleAdd = () => setQuantity((prev) => prev + 1);
+  const handleRemove = () => setQuantity((prev) => Math.max(1, prev - 1));
+
   return (
-    <Paper elevation={3} sx={{ padding: 3, maxWidth: 400, margin: "auto" }}>
+    <Paper elevation={3} sx={{ padding: 3, maxWidth: 600, margin: "auto" }}>
       <Typography variant="h5" fontWeight="bold" gutterBottom>
         {product.name}
       </Typography>
+
+      <img
+        src={product.image}
+        alt={product.name}
+        style={{ width: "100%", height: "auto", borderRadius: 8 }}
+      />
 
       <Typography variant="body2" color="text.secondary" paragraph>
         {product.description}
@@ -36,13 +50,13 @@ const Description = ({ product, quantity, onAdd, onRemove }) => {
           alignItems="center"
           sx={{ border: "1px solid gray", borderRadius: 2 }}
         >
-          <IconButton onClick={onRemove} size="small">
+          <IconButton onClick={handleRemove} size="small">
             <RemoveIcon />
           </IconButton>
           <Typography variant="body1" sx={{ mx: 2 }}>
             {quantity}
           </Typography>
-          <IconButton onClick={onAdd} size="small">
+          <IconButton onClick={handleAdd} size="small">
             <AddIcon />
           </IconButton>
         </Stack>
