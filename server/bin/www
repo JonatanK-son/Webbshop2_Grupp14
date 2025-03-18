@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('server:server');
 var http = require('http');
+const userService = require('../services/userService');
 
 /**
  * Get port from environment and store in Express.
@@ -22,12 +23,43 @@ app.set('port', port);
 var server = http.createServer(app);
 
 /**
+ * Create admin user function
+ */
+async function createAdminUser() {
+  try {
+    // Admin user details
+    const adminData = {
+      email: 'admin@example.com',
+      password: 'adminpassword',
+      username: 'admin',
+      firstName: 'Admin',
+      lastName: 'User',
+      role: 'admin'
+    };
+
+    console.log('Creating admin user...');
+    const admin = await userService.createAdminUser(adminData);
+    console.log('Admin user created successfully!');
+  } catch (error) {
+    // If the error is about duplicate entry, the admin might already exist
+    if (error.name === 'SequelizeUniqueConstraintError') {
+      console.log('Admin user already exists.');
+    } else {
+      console.error('Error creating admin user:', error.message);
+    }
+  }
+}
+
+/**
  * Listen on provided port, on all network interfaces.
  */
 const db = require("../models/");
 db.sequelize
-  .sync()
-  .then(() => {
+  .sync({force: true})
+  .then(async () => {
+    // Create admin user after database sync
+    await createAdminUser();
+    
     server.listen(port, () => {
       console.log(`Server running on localhost:${port}`)
     });

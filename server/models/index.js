@@ -8,10 +8,8 @@ const path = require('path');
 const Sequelize = require('sequelize');
 const process = require('process');
 const basename = path.basename(__filename);
-// Check for Railway environment first, otherwise fall back to NODE_ENV or development
-const env = process.env.RAILWAY_ENVIRONMENT 
-  ? 'railway' 
-  : (process.env.NODE_ENV || 'development');
+// Use NODE_ENV or default to development
+const env = process.env.NODE_ENV || 'development';
 const config = require(__dirname + '/../config/config.json')[env];
 const db = {};
 

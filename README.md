@@ -14,28 +14,12 @@
    npm install
    ```
 
-3. Run the server with local database:
+3. Run the server:
    ```
    npm start
    ```
 
-4. Run the server with Railway database:
-   ```
-   npm run start:railway
-   ```
-
-5. Initialize the database:
-   - For local database:
-     ```
-     npm run db:sync
-     npm run db:create-admin
-     ```
-   
-   - For Railway database:
-     ```
-     npm run db:sync:railway
-     npm run db:create-admin:railway
-     ```
+   This will initialize the database and create an admin user automatically.
 
 ### Client Setup
 
@@ -49,14 +33,14 @@
    npm install
    ```
 
-3. Run the client pointing to local backend:
+3. Run the client:
+   ```
+   npm run dev
+   ```
+   
+   Or use the local environment configuration:
    ```
    npm run dev:local
-   ```
-
-4. Run the client pointing to Railway backend:
-   ```
-   npm run dev:railway
    ```
 
 ### Environment Configuration
@@ -65,14 +49,13 @@ The application uses environment variables to configure the backend URL:
 
 - For the client:
   - Edit `.env.local` to configure the local backend URL
-  - Edit `.env.railway` to configure the Railway backend URL
 
 - For the server:
-  - Edit `.env` to configure the Railway database connection
+  - Edit `.env` to configure the database connection
 
 ## Admin Account
 
-The default admin account created by the setup scripts:
+The default admin account is created automatically when the server starts:
 
 - Email: admin@example.com
 - Password: adminpassword
