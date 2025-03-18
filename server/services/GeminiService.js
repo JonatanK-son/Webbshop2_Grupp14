@@ -1,11 +1,14 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
-const fs = require("fs");
-require("dotenv").config(); // Load environment variables from .env file
+import { GoogleGenerativeAI } from "@google/generative-ai"; // Correct import
+import fs from "fs";
+import dotenv from "dotenv";
+
+dotenv.config(); // Load environment variables
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-async function generateImage() {
-const contents = `Hi, please generate an image of ${product.description}`;
+async function generateImage( product ) {
+
+    const contents = `Hi, please generate an image of ${product.description}`;
 
   // Set responseModalities to include "Image" so the model can generate  an image
   const model = genAI.getGenerativeModel({

@@ -1,5 +1,5 @@
 const express = require('express');
-const { generateImage } = require('../services/geminiService'); // Import the function
+const { generateImage } = require('../services/geminiService');
 const router = express.Router();
 
 router.post('/generate-image', async (req, res) => {

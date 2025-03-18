@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Container, 
-  Typography, 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableContainer, 
-  TableHead, 
-  TableRow, 
-  Paper, 
-  Button, 
-  TextField, 
-  Dialog, 
-  DialogActions, 
-  DialogContent, 
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Container,
+  Typography,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
   DialogTitle,
   IconButton,
   Grid,
@@ -25,25 +25,25 @@ import {
   Tabs,
   Tab,
   Alert,
-  CircularProgress
-} from '@mui/material';
-import { styled } from '@mui/material/styles';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
-import { productService, adminService, userService} from '../services';
-import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
+  CircularProgress,
+} from "@mui/material";
+import { styled } from "@mui/material/styles";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteIcon from "@mui/icons-material/Delete";
+import AddIcon from "@mui/icons-material/Add";
+import { productService, adminService, userService } from "../services";
+import { useNavigate } from "react-router-dom";
+import api from "../services/api";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   fontWeight: theme.typography.fontWeightMedium,
 }));
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
-  '&:nth-of-type(odd)': {
+  "&:nth-of-type(odd)": {
     backgroundColor: theme.palette.action.hover,
   },
-  '&:last-child td, &:last-child th': {
+  "&:last-child td, &:last-child th": {
     border: 0,
   },
 }));
@@ -53,13 +53,13 @@ function Admin() {
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [openDialog, setOpenDialog] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState({ 
-    name: '', 
-    price: '', 
-    category: '', 
-    stock: '', 
-    image: '', 
-    description: '' 
+  const [currentProduct, setCurrentProduct] = useState({
+    name: "",
+    price: "",
+    category: "",
+    stock: "",
+    image: "",
+    description: "",
   });
   const [isEditing, setIsEditing] = useState(false);
   const [tabValue, setTabValue] = useState(0);
@@ -73,23 +73,23 @@ function Admin() {
       try {
         const currentUser = userService.getCurrentUser();
         if (!currentUser) {
-          navigate('/login');
+          navigate("/login");
           return;
         }
-        
+
         try {
           const userProfile = await userService.getUserProfile(currentUser.id);
-          if (userProfile.role !== 'admin') {
-            navigate('/');
+          if (userProfile.role !== "admin") {
+            navigate("/");
           }
           setLoading(false);
         } catch (profileErr) {
-          console.error('Error fetching user profile:', profileErr);
-          navigate('/');
+          console.error("Error fetching user profile:", profileErr);
+          navigate("/");
         }
       } catch (err) {
-        console.error('Error checking admin status:', err);
-        navigate('/');
+        console.error("Error checking admin status:", err);
+        navigate("/");
       }
     };
 
@@ -105,8 +105,8 @@ function Admin() {
         setProducts(data);
         setError(null);
       } catch (err) {
-        console.error('Error fetching products:', err);
-        setError('Failed to load products. Please try again.');
+        console.error("Error fetching products:", err);
+        setError("Failed to load products. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -124,8 +124,8 @@ function Admin() {
         setOrders(data);
         setError(null);
       } catch (err) {
-        console.error('Error fetching orders:', err);
-        setError('Failed to load orders. Please try again.');
+        console.error("Error fetching orders:", err);
+        setError("Failed to load orders. Please try again.");
       } finally {
         setLoading(false);
       }
@@ -143,7 +143,7 @@ function Admin() {
         const data = await adminService.getDashboardStats();
         setStats(data);
       } catch (err) {
-        console.error('Error fetching stats:', err);
+        console.error("Error fetching stats:", err);
       }
     };
 
@@ -156,16 +156,20 @@ function Admin() {
 
   const handleOpenDialog = (product = null) => {
     if (product) {
-      setCurrentProduct(product);
+      setCurrentProduct({
+        ...product,
+        image:
+          product.image || `http://localhost:5000/images/${product.name}.png`,
+      });
       setIsEditing(true);
     } else {
-      setCurrentProduct({ 
-        name: '', 
-        price: '', 
-        category: '', 
-        stock: '', 
-        image: `http://localhost:5000/images/${product.name}.png`, 
-        description: '' 
+      setCurrentProduct({
+        name: "",
+        price: "",
+        category: "",
+        stock: "",
+        image: "",
+        description: "",
       });
       setIsEditing(false);
     }
@@ -185,60 +189,80 @@ function Admin() {
     });
   };
 
+  const handleImageChange = (e) => {
+    const { name, value } = e.target;
+  
+    setCurrentProduct((prev) => ({
+      ...prev,
+      image: value || `http://localhost:5000/images/${prev.name}.png`
+    }));
+  };
+
   const handleSaveProduct = async () => {
     try {
       if (isEditing) {
         // Update existing product
         await productService.updateProduct(currentProduct.id, currentProduct);
-        setProducts(products.map(p => p.id === currentProduct.id ? currentProduct : p));
+        setProducts(
+          products.map((p) => (p.id === currentProduct.id ? currentProduct : p))
+        );
       } else {
         // Add new product
         const newProduct = await productService.createProduct(currentProduct);
         setProducts([...products, newProduct]);
-        
-        await fetch('http://localhost:5000/api/gemini/generate-image', {
-          method: 'POST',
+
+        await fetch("http://localhost:5000/api/gemini/generate-image", {
+          method: "POST",
           headers: {
-              'Content-Type': 'application/json'
+            "Content-Type": "application/json",
           },
-          body: JSON.stringify({ product: newProduct })
+          body: JSON.stringify({ product: newProduct }),
         });
       }
       handleCloseDialog();
       setError(null);
     } catch (err) {
-      console.error('Error saving product:', err);
-      setError('Failed to save product. Please try again.');
+      console.error("Error saving product:", err);
+      setError("Failed to save product. Please try again.");
     }
   };
 
   const handleDeleteProduct = async (id) => {
     try {
       await productService.deleteProduct(id);
-      setProducts(products.filter(p => p.id !== id));
+      setProducts(products.filter((p) => p.id !== id));
       setError(null);
     } catch (err) {
-      console.error('Error deleting product:', err);
-      setError('Failed to delete product. Please try again.');
+      console.error("Error deleting product:", err);
+      setError("Failed to delete product. Please try again.");
     }
   };
 
   const handleUpdateOrderStatus = async (orderId, status) => {
     try {
       await adminService.updateOrderStatus(orderId, status);
-      setOrders(orders.map(order => 
-        order.id === orderId ? { ...order, status } : order
-      ));
+      setOrders(
+        orders.map((order) =>
+          order.id === orderId ? { ...order, status } : order
+        )
+      );
       setError(null);
     } catch (err) {
-      console.error('Error updating order status:', err);
-      setError('Failed to update order status. Please try again.');
+      console.error("Error updating order status:", err);
+      setError("Failed to update order status. Please try again.");
     }
   };
 
   if (loading) {
     return (
-      <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
+      <Container
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "80vh",
+        }}
+      >
         <CircularProgress />
       </Container>
     );
@@ -246,7 +270,12 @@ function Admin() {
 
   return (
     <Container maxWidth="xl" sx={{ mt: 4, mb: 5 }}>
-      <Typography variant="h4" component="h1" gutterBottom sx={{ fontWeight: 'medium' }}>
+      <Typography
+        variant="h4"
+        component="h1"
+        gutterBottom
+        sx={{ fontWeight: "medium" }}
+      >
         Admin Dashboard
       </Typography>
 
@@ -259,25 +288,25 @@ function Admin() {
       {stats && (
         <Grid container spacing={3} sx={{ mb: 4 }}>
           <Grid item xs={12} sm={6} md={3}>
-            <Paper sx={{ p: 2, textAlign: 'center' }}>
+            <Paper sx={{ p: 2, textAlign: "center" }}>
               <Typography variant="h6">Total Orders</Typography>
               <Typography variant="h4">{stats.totalOrders}</Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Paper sx={{ p: 2, textAlign: 'center' }}>
+            <Paper sx={{ p: 2, textAlign: "center" }}>
               <Typography variant="h6">Total Revenue</Typography>
               <Typography variant="h4">${stats.totalRevenue}</Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Paper sx={{ p: 2, textAlign: 'center' }}>
+            <Paper sx={{ p: 2, textAlign: "center" }}>
               <Typography variant="h6">Total Products</Typography>
               <Typography variant="h4">{stats.totalProducts}</Typography>
             </Paper>
           </Grid>
           <Grid item xs={12} sm={6} md={3}>
-            <Paper sx={{ p: 2, textAlign: 'center' }}>
+            <Paper sx={{ p: 2, textAlign: "center" }}>
               <Typography variant="h6">Total Users</Typography>
               <Typography variant="h4">{stats.totalUsers}</Typography>
             </Paper>
@@ -285,8 +314,12 @@ function Admin() {
         </Grid>
       )}
 
-      <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
-        <Tabs value={tabValue} onChange={handleTabChange} aria-label="admin tabs">
+      <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 3 }}>
+        <Tabs
+          value={tabValue}
+          onChange={handleTabChange}
+          aria-label="admin tabs"
+        >
           <Tab label="Products" />
           <Tab label="Orders" />
         </Tabs>
@@ -295,19 +328,26 @@ function Admin() {
       {/* Products Tab */}
       {tabValue === 0 && (
         <>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              mb: 3,
+            }}
+          >
             <Typography variant="h5" component="h2">
               Product Management
             </Typography>
-            <Button 
-              variant="contained" 
+            <Button
+              variant="contained"
               startIcon={<AddIcon />}
               onClick={() => handleOpenDialog()}
-              sx={{ 
-                backgroundColor: '#000',
-                '&:hover': {
-                  backgroundColor: '#333',
-                }
+              sx={{
+                backgroundColor: "#000",
+                "&:hover": {
+                  backgroundColor: "#333",
+                },
               }}
             >
               Add Product
@@ -316,7 +356,7 @@ function Admin() {
 
           <TableContainer component={Paper} sx={{ mb: 4 }}>
             <Table sx={{ minWidth: 650 }} aria-label="product table">
-              <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+              <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
                 <TableRow>
                   <StyledTableCell>ID</StyledTableCell>
                   <StyledTableCell>Name</StyledTableCell>
@@ -335,15 +375,15 @@ function Admin() {
                     <TableCell align="right">${product.price}</TableCell>
                     <TableCell align="right">{product.stock}</TableCell>
                     <TableCell align="center">
-                      <IconButton 
-                        size="small" 
+                      <IconButton
+                        size="small"
                         onClick={() => handleOpenDialog(product)}
                         sx={{ mr: 1 }}
                       >
                         <EditIcon fontSize="small" />
                       </IconButton>
-                      <IconButton 
-                        size="small" 
+                      <IconButton
+                        size="small"
                         onClick={() => handleDeleteProduct(product.id)}
                       >
                         <DeleteIcon fontSize="small" />
@@ -365,7 +405,7 @@ function Admin() {
           </Typography>
           <TableContainer component={Paper}>
             <Table sx={{ minWidth: 650 }} aria-label="orders table">
-              <TableHead sx={{ backgroundColor: '#f5f5f5' }}>
+              <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
                 <TableRow>
                   <StyledTableCell>Order ID</StyledTableCell>
                   <StyledTableCell>Customer</StyledTableCell>
@@ -380,13 +420,17 @@ function Admin() {
                   <StyledTableRow key={order.id}>
                     <TableCell>{order.id}</TableCell>
                     <TableCell>{order.customer}</TableCell>
-                    <TableCell>{new Date(order.date).toLocaleDateString()}</TableCell>
+                    <TableCell>
+                      {new Date(order.date).toLocaleDateString()}
+                    </TableCell>
                     <TableCell>${order.total}</TableCell>
                     <TableCell>
                       <FormControl size="small" fullWidth>
                         <Select
                           value={order.status}
-                          onChange={(e) => handleUpdateOrderStatus(order.id, e.target.value)}
+                          onChange={(e) =>
+                            handleUpdateOrderStatus(order.id, e.target.value)
+                          }
                         >
                           <MenuItem value="Processing">Processing</MenuItem>
                           <MenuItem value="Shipped">Shipped</MenuItem>
@@ -396,7 +440,7 @@ function Admin() {
                       </FormControl>
                     </TableCell>
                     <TableCell>
-                      <Button 
+                      <Button
                         size="small"
                         onClick={() => navigate(`/admin/orders/${order.id}`)}
                       >
@@ -412,8 +456,15 @@ function Admin() {
       )}
 
       {/* Product Dialog */}
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-        <DialogTitle>{isEditing ? 'Edit Product' : 'Add New Product'}</DialogTitle>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>
+          {isEditing ? "Edit Product" : "Add New Product"}
+        </DialogTitle>
         <DialogContent>
           {error && (
             <Alert severity="error" sx={{ mb: 2, mt: 1 }}>
@@ -425,7 +476,7 @@ function Admin() {
               <TextField
                 name="name"
                 label="Product Name"
-                value={currentProduct.name || ''}
+                value={currentProduct.name || ""}
                 onChange={handleInputChange}
                 fullWidth
                 required
@@ -436,7 +487,7 @@ function Admin() {
                 name="price"
                 label="Price"
                 type="number"
-                value={currentProduct.price || ''}
+                value={currentProduct.price || ""}
                 onChange={handleInputChange}
                 fullWidth
                 required
@@ -447,7 +498,7 @@ function Admin() {
                 name="stock"
                 label="Stock"
                 type="number"
-                value={currentProduct.stock || ''}
+                value={currentProduct.stock || ""}
                 onChange={handleInputChange}
                 fullWidth
                 required
@@ -458,7 +509,7 @@ function Admin() {
                 <InputLabel>Category</InputLabel>
                 <Select
                   name="category"
-                  value={currentProduct.category || ''}
+                  value={currentProduct.category || ""}
                   onChange={handleInputChange}
                   label="Category"
                 >
@@ -474,8 +525,8 @@ function Admin() {
               <TextField
                 name="image"
                 label="Image URL"
-                value={currentProduct.image || ''}
-                onChange={handleInputChange}
+                value={`http://localhost:5000/images/${currentProduct.name}.png`}
+                onChange={handleImageChange}
                 fullWidth
                 required
               />
@@ -484,7 +535,7 @@ function Admin() {
               <TextField
                 name="description"
                 label="Description"
-                value={currentProduct.description || ''}
+                value={currentProduct.description || ""}
                 onChange={handleInputChange}
                 fullWidth
                 multiline
@@ -496,17 +547,17 @@ function Admin() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button 
+          <Button
             onClick={handleSaveProduct}
             variant="contained"
-            sx={{ 
-              backgroundColor: '#000',
-              '&:hover': {
-                backgroundColor: '#333',
-              }
+            sx={{
+              backgroundColor: "#000",
+              "&:hover": {
+                backgroundColor: "#333",
+              },
             }}
           >
-            {isEditing ? 'Update' : 'Add'}
+            {isEditing ? "Update" : "Add"}
           </Button>
         </DialogActions>
       </Dialog>
@@ -514,4 +565,4 @@ function Admin() {
   );
 }
 
-export default Admin; 
+export default Admin;
