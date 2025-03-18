@@ -9,7 +9,7 @@ const productsRouter = require('./routes/products');
 const cartRouter = require('./routes/cart');
 const ratingsRouter = require('./routes/ratings');
 const usersRouter = require('./routes/users');
-const geminiRoutes = require('./routes/geminiRoutes');
+const geminiRouter = require('./routes/gemini');
 
 var app = express();
 
@@ -26,7 +26,7 @@ app.use('/api/products', productsRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/ratings', ratingsRouter);
 app.use('/api/users', usersRouter);
-app.use('/api/gemini', geminiRoutes);
+app.use('/api/gemini', geminiRouter);
 
 // Error handler
 app.use((err, req, res, next) => {
