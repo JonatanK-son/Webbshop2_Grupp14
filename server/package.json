@@ -3,9 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "nodemon ./bin/www",
-    "db:sync": "node ./scripts/sync-database.js",
-    "db:create-admin": "node ./scripts/create-admin.js"
+    "start": "nodemon ./bin/www"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

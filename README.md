@@ -19,11 +19,7 @@
    npm start
    ```
 
-4. Initialize the database:
-   ```
-   npm run db:sync
-   npm run db:create-admin
-   ```
+   This will initialize the database and create an admin user automatically.
 
 ### Client Setup
 
@@ -59,7 +55,7 @@ The application uses environment variables to configure the backend URL:
 
 ## Admin Account
 
-The default admin account created by the setup scripts:
+The default admin account is created automatically when the server starts:
 
 - Email: admin@example.com
 - Password: adminpassword
