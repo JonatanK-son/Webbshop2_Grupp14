@@ -106,11 +106,6 @@ function App() {
     { name: "All Products", path: "/products" }
   ];
 
-  // Add admin link only for admin users
-  if (isAuthenticated && currentUser?.role === 'admin') {
-    menuItems.push({ name: "Admin", path: "/admin" });
-  }
-
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       <AppBar
