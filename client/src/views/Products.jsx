@@ -4,8 +4,8 @@ import { Box, Typography, Grid, Card, CardContent, CardMedia, CardActionArea, Bu
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
-import { useCart } from '../context/CartContext';
 import api from '../services/api';
+import AddToCartButton from "../components/AddToCartButton";
 
 const StyledCard = styled(Card)(({ theme }) => ({
   height: '100%',
@@ -38,12 +38,7 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
   const [categories, setCategories] = useState(['All']);
-
-  // Use cart context
-  const { addToCart, toggleCart } = useCart();
 
   // Fetch products from the API
   useEffect(() => {
@@ -68,22 +63,9 @@ function Products() {
     fetchProducts();
   }, []);
 
-  const handleAddToCart = (product, e) => {
-    e.stopPropagation();
-    addToCart(product);
-    setSnackbarMessage(`${product.name} added to cart`);
-    setSnackbarOpen(true);
-  };
-
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSnackbarOpen(false);
-  };
-
-  const handleProductClick = (productId) => {
-    navigate(`/products/${productId}`);
+  const handleProductClick = (product) => {
+    console.log("Product clicked: ", product);
+    navigate(`/products/${product.id}`, { state: { product } });
   };
 
   // Filter and sort products
@@ -181,7 +163,7 @@ function Products() {
           {filteredProducts.map((product) => (
             <Grid item xs={6} sm={4} md={3} lg={2} key={product.id}>
               <StyledCard elevation={0}>
-                <CardActionArea onClick={() => handleProductClick(product.id)}>
+                <CardActionArea onClick={() => handleProductClick(product)}>
                   <CardMedia
                     component="img"
                     height="140"
@@ -201,56 +183,13 @@ function Products() {
                   </CardContent>
                 </CardActionArea>
                 <Box sx={{ p: 1, pt: 0 }}>
-                  <Button 
-                    variant="contained" 
-                    fullWidth
-                    size="small"
-                    onClick={(e) => handleAddToCart(product, e)}
-                    sx={{ 
-                      backgroundColor: '#000',
-                      '&:hover': {
-                        backgroundColor: '#333',
-                      },
-                      py: 0.5,
-                      mt: 0.5
-                    }}
-                  >
-                    Add to Cart
-                  </Button>
+                  <AddToCartButton product={product}/>
                 </Box>
               </StyledCard>
             </Grid>
           ))}
         </Grid>
       )}
-
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert 
-          onClose={handleSnackbarClose} 
-          severity="success" 
-          variant="filled" 
-          sx={{ width: '100%' }}
-          action={
-            <Button 
-              color="inherit" 
-              size="small" 
-              onClick={() => {
-                toggleCart();
-                setSnackbarOpen(false);
-              }}
-            >
-              VIEW CART
-            </Button>
-          }
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
     </Container>
   );
 }
