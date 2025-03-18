@@ -51,6 +51,61 @@ async function createAdminUser() {
 }
 
 /**
+ * Create sample users function
+ */
+async function createSampleUsers() {
+  try {
+    // Sample user data
+    const users = [
+      {
+        email: 'user1@example.com',
+        password: 'password123',
+        username: 'user1',
+        firstName: 'John',
+        lastName: 'Doe',
+        role: 'user'
+      },
+      {
+        email: 'user2@example.com',
+        password: 'password123',
+        username: 'user2',
+        firstName: 'Jane',
+        lastName: 'Smith',
+        role: 'user'
+      },
+      {
+        email: 'user3@example.com',
+        password: 'password123',
+        username: 'user3',
+        firstName: 'Bob',
+        lastName: 'Johnson',
+        role: 'user'
+      }
+    ];
+
+    console.log('Creating sample users...');
+    
+    for (const userData of users) {
+      try {
+        await userService.createUser(userData);
+        console.log(`User created: ${userData.username} (${userData.email})`);
+      } catch (error) {
+        // If user already exists, skip
+        if (error.name === 'SequelizeUniqueConstraintError') {
+          console.log(`User ${userData.email} already exists, skipping...`);
+        } else {
+          console.error(`Error creating user ${userData.email}:`, error.message);
+        }
+      }
+    }
+    
+    console.log('Sample users created successfully!');
+  } catch (error) {
+    console.error('Error creating sample users:', error.message);
+  }
+}
+
+/**
  * Listen on provided port, on all network interfaces.
  */
 const db = require("../models/");
@@ -59,6 +114,9 @@ db.sequelize
   .then(async () => {
     // Create admin user after database sync
     await createAdminUser();
+    
+    // Create sample users
+    await createSampleUsers();
     
     server.listen(port, () => {
       console.log(`Server running on localhost:${port}`)

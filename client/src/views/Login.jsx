@@ -6,13 +6,15 @@ import {
   TextField,
   Button,
   Paper,
-  Alert
+  Alert,
+  Link as MuiLink
 } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
-import { userService } from '../services';
+import { useNavigate, Link } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 
 function Login() {
   const navigate = useNavigate();
+  const { login } = useUser();
   const [credentials, setCredentials] = useState({
     email: '',
     password: ''
@@ -34,7 +36,7 @@ function Login() {
     setLoading(true);
 
     try {
-      const response = await userService.login(credentials);
+      const response = await login(credentials);
       
       // Check if user is admin
       if (response.user.role === 'admin') {
@@ -101,6 +103,15 @@ function Login() {
             >
               {loading ? 'Logging in...' : 'Login'}
             </Button>
+            
+            <Box sx={{ textAlign: 'center', mt: 2 }}>
+              <Typography variant="body2">
+                Don't have an account?{' '}
+                <MuiLink component={Link} to="/register">
+                  Register
+                </MuiLink>
+              </Typography>
+            </Box>
           </form>
         </Paper>
       </Box>

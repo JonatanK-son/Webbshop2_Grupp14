@@ -8,8 +8,10 @@ import ProductEdit from './views/ProductEdit.jsx'
 import Products from './views/Products.jsx'
 import Admin from './views/Admin.jsx'
 import Login from './views/Login.jsx'
+import Register from './views/Register.jsx'
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { CartProvider } from './context/CartContext.jsx';
+import { UserProvider } from './context/UserContext.jsx';
 
 const router = createBrowserRouter([
   { 
@@ -39,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: '/login',
         element: <Login />
+      },
+      {
+        path: '/register',
+        element: <Register />
       }
     ]
   }
@@ -46,8 +52,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <CartProvider>
-      <RouterProvider router={router} />
-    </CartProvider>
+    <UserProvider>
+      <CartProvider>
+        <RouterProvider router={router} />
+      </CartProvider>
+    </UserProvider>
   </StrictMode>,
 )

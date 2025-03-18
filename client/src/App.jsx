@@ -9,9 +9,11 @@ import CloseIcon from '@mui/icons-material/Close';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
+import PersonIcon from '@mui/icons-material/Person';
 import { useState } from 'react';
 import React from 'react';
 import { useCart } from './context/CartContext';
+import { useUser } from './context/UserContext';
 
 const Main = styled('main')(({ theme }) => ({
   flexGrow: 1,
@@ -60,10 +62,11 @@ const QuantityControl = styled(Box)(({ theme }) => ({
 
 function App() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [userMenuAnchor, setUserMenuAnchor] = useState(null);
   const location = useLocation();
   const navigate = useNavigate();
   
-  // Use cart context instead of local state
+  // Use cart context
   const { 
     cartItems, 
     cartOpen, 
@@ -77,15 +80,36 @@ function App() {
     setCartOpen 
   } = useCart();
 
+  // Use user context
+  const { currentUser, isAuthenticated, logout } = useUser();
+
   const handleMenuToggle = () => {
     setMenuOpen(!menuOpen);
   };
 
+  const handleUserMenuOpen = (event) => {
+    setUserMenuAnchor(event.currentTarget);
+  };
+
+  const handleUserMenuClose = () => {
+    setUserMenuAnchor(null);
+  };
+
+  const handleLogout = () => {
+    logout();
+    handleUserMenuClose();
+    navigate('/');
+  };
+
   const menuItems = [
     { name: "Home", path: "/" },
-    { name: "All Products", path: "/products" },
-    { name: "Admin", path: "/admin" }
+    { name: "All Products", path: "/products" }
   ];
+
+  // Add admin link only for admin users
+  if (isAuthenticated && currentUser?.role === 'admin') {
+    menuItems.push({ name: "Admin", path: "/admin" });
+  }
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
@@ -148,6 +172,73 @@ function App() {
             >
               Products
             </Button>
+            
+            {/* User Authentication buttons */}
+            {isAuthenticated ? (
+              <>
+                <IconButton 
+                  color="inherit"
+                  onClick={handleUserMenuOpen}
+                  sx={{ mx: { xs: 0.5, sm: 1 } }}
+                >
+                  <PersonIcon />
+                </IconButton>
+                <Menu
+                  anchorEl={userMenuAnchor}
+                  open={Boolean(userMenuAnchor)}
+                  onClose={handleUserMenuClose}
+                >
+                  <MenuItem disabled>
+                    <Typography variant="body2">
+                      Signed in as <strong>{currentUser?.username}</strong>
+                    </Typography>
+                  </MenuItem>
+                  <Divider />
+                  {currentUser?.role === 'admin' && (
+                    <MenuItem onClick={() => {
+                      handleUserMenuClose();
+                      navigate('/admin');
+                    }}>
+                      Admin Dashboard
+                    </MenuItem>
+                  )}
+                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                </Menu>
+              </>
+            ) : (
+              <>
+                <Button
+                  color="inherit"
+                  onClick={() => navigate('/login')}
+                  sx={{ 
+                    mx: { xs: 0.5, sm: 1 },
+                    '&:hover': {
+                      backgroundColor: 'transparent',
+                      color: '#555'
+                    }
+                  }}
+                >
+                  Login
+                </Button>
+                <Button
+                  variant="outlined"
+                  onClick={() => navigate('/register')}
+                  sx={{ 
+                    mx: { xs: 0.5, sm: 1 },
+                    borderColor: '#000',
+                    color: '#000',
+                    '&:hover': {
+                      borderColor: '#555',
+                      backgroundColor: 'transparent',
+                      color: '#555'
+                    }
+                  }}
+                >
+                  Register
+                </Button>
+              </>
+            )}
+            
             <IconButton 
               color="inherit" 
               onClick={toggleCart} 
