@@ -38,8 +38,6 @@ function Products() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [snackbarOpen, setSnackbarOpen] = useState(false);
-  const [snackbarMessage, setSnackbarMessage] = useState('');
   const [categories, setCategories] = useState(['All']);
 
   // Use cart context
@@ -68,22 +66,9 @@ function Products() {
     fetchProducts();
   }, []);
 
-  const handleAddToCart = (product, e) => {
-    e.stopPropagation();
-    addToCart(product);
-    setSnackbarMessage(`${product.name} added to cart`);
-    setSnackbarOpen(true);
-  };
-
-  const handleSnackbarClose = (event, reason) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-    setSnackbarOpen(false);
-  };
-
-  const handleProductClick = (productId) => {
-    navigate(`/products/${productId}`);
+  const handleProductClick = (product) => {
+    console.log("Product clicked: ", product);
+    navigate(`/products/${product.id}`, { state: { product } });
   };
 
   // Filter and sort products
@@ -201,56 +186,13 @@ function Products() {
                   </CardContent>
                 </CardActionArea>
                 <Box sx={{ p: 1, pt: 0 }}>
-                  <Button 
-                    variant="contained" 
-                    fullWidth
-                    size="small"
-                    onClick={(e) => handleAddToCart(product, e)}
-                    sx={{ 
-                      backgroundColor: '#000',
-                      '&:hover': {
-                        backgroundColor: '#333',
-                      },
-                      py: 0.5,
-                      mt: 0.5
-                    }}
-                  >
-                    Add to Cart
-                  </Button>
+                  <AddToCartButton product={product}/>
                 </Box>
               </StyledCard>
             </Grid>
           ))}
         </Grid>
       )}
-
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={3000}
-        onClose={handleSnackbarClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-      >
-        <Alert 
-          onClose={handleSnackbarClose} 
-          severity="success" 
-          variant="filled" 
-          sx={{ width: '100%' }}
-          action={
-            <Button 
-              color="inherit" 
-              size="small" 
-              onClick={() => {
-                toggleCart();
-                setSnackbarOpen(false);
-              }}
-            >
-              VIEW CART
-            </Button>
-          }
-        >
-          {snackbarMessage}
-        </Alert>
-      </Snackbar>
     </Container>
   );
 }
