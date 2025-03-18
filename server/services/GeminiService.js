@@ -33,4 +33,4 @@ const contents = `Hi, please generate an image of ${product.description}`;
   }
 }
 
-generateImage();
+export { generateImage };

@@ -32,8 +32,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { productService, adminService, userService} from '../services';
-import { generateImage } from '../../../server/services/geminiService.js';
 import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   fontWeight: theme.typography.fontWeightMedium,
@@ -164,7 +164,7 @@ function Admin() {
         price: '', 
         category: '', 
         stock: '', 
-        image: `../server/images/${product.name}.png`, 
+        image: `http://localhost:5000/images/${product.name}.png`, 
         description: '' 
       });
       setIsEditing(false);
@@ -195,7 +195,14 @@ function Admin() {
         // Add new product
         const newProduct = await productService.createProduct(currentProduct);
         setProducts([...products, newProduct]);
-        generateImage(newProduct);
+        
+        await fetch('http://localhost:5000/api/gemini/generate-image', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ product: newProduct })
+        });
       }
       handleCloseDialog();
       setError(null);

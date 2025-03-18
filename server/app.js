@@ -2,12 +2,14 @@ var express = require('express');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var cors = require('cors');
+require('dotenv').config();
 
 // Import routes
 const productsRouter = require('./routes/products');
 const cartRouter = require('./routes/cart');
 const ratingsRouter = require('./routes/ratings');
 const usersRouter = require('./routes/users');
+const geminiRoutes = require('./routes/geminiRoutes');
 
 var app = express();
 
@@ -17,12 +19,14 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use('/images', express.static('images'));
 
 // Routes
 app.use('/api/products', productsRouter);
 app.use('/api/cart', cartRouter);
 app.use('/api/ratings', ratingsRouter);
 app.use('/api/users', usersRouter);
+app.use('/api/gemini', geminiRoutes);
 
 // Error handler
 app.use((err, req, res, next) => {
