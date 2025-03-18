@@ -71,7 +71,6 @@ function Admin() {
   const nameRef = useRef(null);
   const priceRef = useRef(null);
   const stockRef = useRef(null);
-  const categoryRef = useRef(null);
   const imageRef = useRef(null);
   const descriptionRef = useRef(null);
 
@@ -210,7 +209,7 @@ function Admin() {
         name: nameRef.current.value,
         price: priceRef.current.value,
         stock: stockRef.current.value,
-        category: categoryRef.current.value,
+        category: currentProduct.category,
         image: imageRef.current.value,
         description: descriptionRef.current.value,
       };
@@ -524,8 +523,9 @@ function Admin() {
               <FormControl fullWidth required>
                 <InputLabel>Category</InputLabel>
                 <Select
-                  inputRef={categoryRef}
-                  value={currentProduct.category || ""}
+                  name="category"
+                  value={currentProduct.category || ''}
+                  onChange={handleInputChange}
                   label="Category"
                 >
                   <MenuItem value="Electronics">Electronics</MenuItem>
