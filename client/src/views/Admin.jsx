@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Container,
@@ -66,6 +66,14 @@ function Admin() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [stats, setStats] = useState(null);
+
+  // References for form fields
+  const nameRef = useRef(null);
+  const priceRef = useRef(null);
+  const stockRef = useRef(null);
+  const categoryRef = useRef(null);
+  const imageRef = useRef(null);
+  const descriptionRef = useRef(null);
 
   // Check if user is admin
   useEffect(() => {
@@ -156,11 +164,7 @@ function Admin() {
 
   const handleOpenDialog = (product = null) => {
     if (product) {
-      setCurrentProduct({
-        ...product,
-        image:
-          product.image || `http://localhost:5000/images/${product.name}.png`,
-      });
+      setCurrentProduct({ ...product });
       setIsEditing(true);
     } else {
       setCurrentProduct({
@@ -183,34 +187,46 @@ function Admin() {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setCurrentProduct({
-      ...currentProduct,
-      [name]: name === 'price' || name === 'stock' ? Number(value) : value
-    });
+
+    if (name === "name") {
+      // Update the image URL dynamically when the product name changes
+      setCurrentProduct({
+        ...currentProduct,
+        [name]: value,
+        image: `http://localhost:5000/images/${value}.png`, // Dynamically set the image URL
+      });
+    } else {
+      setCurrentProduct({
+        ...currentProduct,
+        [name]: name === "price" || name === "stock" ? Number(value) : value,
+      });
+    }
   };
 
-  const handleImageChange = (e) => {
-    const { name, value } = e.target;
-  
-    setCurrentProduct((prev) => ({
-      ...prev,
-      image: value || `http://localhost:5000/images/${prev.name}.png`
-    }));
-  };
-
+  // Function to fetch form data on Save
   const handleSaveProduct = async () => {
     try {
+      const productData = {
+        name: nameRef.current.value,
+        price: priceRef.current.value,
+        stock: stockRef.current.value,
+        category: categoryRef.current.value,
+        image: imageRef.current.value,
+        description: descriptionRef.current.value,
+      };
+
       if (isEditing) {
         // Update existing product
-        await productService.updateProduct(currentProduct.id, currentProduct);
+        await productService.updateProduct(currentProduct.id, productData);
         setProducts(
-          products.map((p) => (p.id === currentProduct.id ? currentProduct : p))
+          products.map((p) => (p.id === currentProduct.id ? productData : p))
         );
       } else {
         // Add new product
-        const newProduct = await productService.createProduct(currentProduct);
+        const newProduct = await productService.createProduct(productData);
         setProducts([...products, newProduct]);
 
+        // Optional: Trigger image generation API if needed
         await fetch("http://localhost:5000/api/gemini/generate-image", {
           method: "POST",
           headers: {
@@ -219,6 +235,7 @@ function Admin() {
           body: JSON.stringify({ product: newProduct }),
         });
       }
+
       handleCloseDialog();
       setError(null);
     } catch (err) {
@@ -476,41 +493,39 @@ function Admin() {
               <TextField
                 name="name"
                 label="Product Name"
-                value={currentProduct.name || ""}
-                onChange={handleInputChange}
+                inputRef={nameRef}
                 fullWidth
                 required
+                defaultValue={currentProduct.name || ""}
+                onChange={handleInputChange}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                name="price"
                 label="Price"
                 type="number"
-                value={currentProduct.price || ""}
-                onChange={handleInputChange}
+                inputRef={priceRef}
                 fullWidth
                 required
+                defaultValue={currentProduct.price || ""}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                name="stock"
                 label="Stock"
                 type="number"
-                value={currentProduct.stock || ""}
-                onChange={handleInputChange}
+                inputRef={stockRef}
                 fullWidth
                 required
+                defaultValue={currentProduct.stock || ""}
               />
             </Grid>
             <Grid item xs={12}>
               <FormControl fullWidth required>
                 <InputLabel>Category</InputLabel>
                 <Select
-                  name="category"
+                  inputRef={categoryRef}
                   value={currentProduct.category || ""}
-                  onChange={handleInputChange}
                   label="Category"
                 >
                   <MenuItem value="Electronics">Electronics</MenuItem>
@@ -523,24 +538,22 @@ function Admin() {
             </Grid>
             <Grid item xs={12}>
               <TextField
-                name="image"
                 label="Image URL"
-                value={`http://localhost:5000/images/${currentProduct.name}.png`}
-                onChange={handleImageChange}
+                inputRef={imageRef}
                 fullWidth
                 required
+                value={ currentProduct.image || `http://localhost:5000/images/${currentProduct.name}.png` } // Dynamically set the image URL
               />
             </Grid>
             <Grid item xs={12}>
               <TextField
-                name="description"
                 label="Description"
-                value={currentProduct.description || ""}
-                onChange={handleInputChange}
+                inputRef={descriptionRef}
                 fullWidth
                 multiline
                 rows={4}
                 required
+                defaultValue={currentProduct.description || ""}
               />
             </Grid>
           </Grid>
