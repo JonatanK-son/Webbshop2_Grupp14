@@ -31,7 +31,8 @@ import { styled } from '@mui/material/styles';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import { productService, adminService, userService } from '../services';
+import { productService, adminService, userService} from '../services';
+import { generateImage } from '../../../server/services/geminiService.js';
 import { useNavigate } from 'react-router-dom';
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -163,7 +164,7 @@ function Admin() {
         price: '', 
         category: '', 
         stock: '', 
-        image: 'https://via.placeholder.com/300x200', 
+        image: `../server/images/${product.name}.png`, 
         description: '' 
       });
       setIsEditing(false);
@@ -194,6 +195,7 @@ function Admin() {
         // Add new product
         const newProduct = await productService.createProduct(currentProduct);
         setProducts([...products, newProduct]);
+        generateImage(newProduct);
       }
       handleCloseDialog();
       setError(null);
