@@ -4,11 +4,8 @@
   "private": true,
   "scripts": {
     "start": "nodemon ./bin/www",
-    "start:railway": "cross-env RAILWAY_ENVIRONMENT=true nodemon ./bin/www",
     "db:sync": "node ./scripts/sync-database.js",
-    "db:sync:railway": "node ./scripts/sync-database-railway.js",
-    "db:create-admin": "node ./scripts/create-admin.js",
-    "db:create-admin:railway": "node ./scripts/create-admin-railway.js"
+    "db:create-admin": "node ./scripts/create-admin.js"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

@@ -6,10 +6,8 @@
   "scripts": {
     "dev": "vite",
     "dev:local": "vite --mode local",
-    "dev:railway": "vite --mode railway",
     "build": "vite build",
     "build:local": "vite build --mode local",
-    "build:railway": "vite build --mode railway",
     "lint": "eslint .",
     "preview": "vite preview"
   },
