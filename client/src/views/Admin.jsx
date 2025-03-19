@@ -542,7 +542,7 @@ function Admin() {
                 inputRef={imageRef}
                 fullWidth
                 required
-                value={ currentProduct.image || `http://localhost:5000/images/${currentProduct.name}.png` } // Dynamically set the image URL
+                value={ currentProduct.image || "" } // Don't set a default path since we now generate a proper URL
               />
             </Grid>
             <Grid item xs={12}>

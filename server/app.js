@@ -10,6 +10,7 @@ const cartRouter = require('./routes/cart');
 const ratingsRouter = require('./routes/ratings');
 const usersRouter = require('./routes/users');
 const geminiRouter = require('./routes/gemini');
+const imagesRouter = require('./routes/images');
 
 var app = express();
 
@@ -19,7 +20,6 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use('/images', express.static('images'));
 
 // Routes
 app.use('/api/products', productsRouter);
@@ -27,6 +27,7 @@ app.use('/api/cart', cartRouter);
 app.use('/api/ratings', ratingsRouter);
 app.use('/api/users', usersRouter);
 app.use('/api/gemini', geminiRouter);
+app.use('/api/images', imagesRouter);
 
 // Error handler
 app.use((err, req, res, next) => {
