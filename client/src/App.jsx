@@ -130,8 +130,7 @@ function App() {
           <Typography 
             variant="h6" 
             component="div" 
-            sx={{ 
-              flexGrow: 1, 
+            sx={{    
               fontWeight: 'bold',
               letterSpacing: '1px',
               cursor: 'pointer'
@@ -140,6 +139,7 @@ function App() {
           >
             WEBSHOP
           </Typography>
+          <Box sx={{ flexGrow: '1' }}></Box> {/* Empty component for spacing */}
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Button 
               color="inherit" 

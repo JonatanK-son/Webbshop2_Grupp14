@@ -20,8 +20,6 @@ const Description = () => {
   const handleAdd = () => setQuantity((prev) => prev + 1);
   const handleRemove = () => setQuantity((prev) => Math.max(1, prev - 1));
 
-  console.log(product.image);
-
   return (
     <Paper elevation={3} sx={{ padding: 3, maxWidth: 800, margin: "auto" }}>
       <Grid container spacing={2} alignItems="center">
