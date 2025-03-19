@@ -94,41 +94,37 @@ const RatingComponent = ({ productId }) => {
         <Typography variant="h6" gutterBottom>
           Product Ratings
         </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-          <Rating 
-            value={averageRating} 
-            precision={0.5} 
-            readOnly 
-            size="large"
-          />
+        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+          <Rating value={averageRating} precision={0.5} readOnly size="large" />
           <Typography variant="h6" sx={{ ml: 1 }}>
             {averageRating.toFixed(1)}
           </Typography>
-          <Typography variant="body2" sx={{ ml: 1, color: 'text.secondary' }}>
-            ({ratings.length} {ratings.length === 1 ? 'review' : 'reviews'})
+          <Typography variant="body2" sx={{ ml: 1, color: "text.secondary" }}>
+            ({ratings.length} {ratings.length === 1 ? "review" : "reviews"})
           </Typography>
         </Box>
-        <Button 
-          variant="contained" 
-          onClick={handleOpenDialog}
-          sx={{ mt: 1 }}
-        >
+        <Button variant="contained" onClick={handleOpenDialog} sx={{ mt: 1 }}>
           Write a Review
         </Button>
       </Box>
 
-      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
+      <Dialog
+        open={openDialog}
+        onClose={handleCloseDialog}
+        maxWidth="sm"
+        fullWidth
+      >
         <DialogTitle>Write a Review</DialogTitle>
         <DialogContent>
           <Box sx={{ py: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
               <Rating
                 value={userRating}
                 onChange={(event, newValue) => setUserRating(newValue)}
                 size="large"
               />
               <Typography variant="body2" sx={{ ml: 1 }}>
-                {userRating > 0 ? `${userRating} stars` : 'Select rating'}
+                {userRating > 0 ? `${userRating} stars` : "Select rating"}
               </Typography>
             </Box>
             <TextField
@@ -143,9 +139,9 @@ const RatingComponent = ({ productId }) => {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseDialog}>Cancel</Button>
-          <Button 
-            onClick={handleSubmitRating} 
-            variant="contained" 
+          <Button
+            onClick={handleSubmitRating}
+            variant="contained"
             disabled={!userRating}
           >
             Submit Review
@@ -159,10 +155,13 @@ const RatingComponent = ({ productId }) => {
             <ListItem alignItems="flex-start">
               <ListItemText
                 primary={
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                  <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                     <Rating value={rating.rating} readOnly size="small" />
-                    <Typography variant="body2" sx={{ ml: 1, color: 'text.secondary' }}>
-                      by {rating.user ? rating.user.username : 'Anonymous'}
+                    <Typography
+                      variant="body2"
+                      sx={{ ml: 1, color: "text.secondary" }}
+                    >
+                      by {rating.user ? rating.user.username : "Anonymous"}
                     </Typography>
                   </Box>
                 }
@@ -173,7 +172,7 @@ const RatingComponent = ({ productId }) => {
                       variant="body2"
                       color="text.primary"
                     >
-                      {rating.comment || 'No comment provided'}
+                      {rating.comment ? rating.comment : ""}
                     </Typography>
                   </React.Fragment>
                 }
@@ -183,7 +182,11 @@ const RatingComponent = ({ productId }) => {
           </React.Fragment>
         ))}
         {ratings.length === 0 && (
-          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{ textAlign: "center", py: 2 }}
+          >
             No reviews yet. Be the first to review this product!
           </Typography>
         )}
