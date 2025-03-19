@@ -26,7 +26,11 @@ function ProductDetails() {
             onRemove={removeQuant}
             onSetOrderedQuant={setOrderedQuant}
           />
-          <RatingComponent productId={id} />
+        </section>
+      </Container>
+      <Container component="section" maxWidth={"lg"} sx={{mt: 3}}>
+        <section className="rating">
+        <RatingComponent productId={id} />
         </section>
       </Container>
     </main>
