@@ -157,6 +157,34 @@ export const CartProvider = ({ children }) => {
     }
   };
 
+  const refreshCart = async () => {
+    if (!userId) {
+      return;
+    }
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const cartData = await cartService.getCart(userId);
+      // Transform the API response to match the client-side cart format
+      const cartItems = cartData.cart_rows ? cartData.cart_rows.map(row => ({
+        id: row.product.id,
+        name: row.product.name,
+        price: row.product.price,
+        image: row.product.image,
+        quantity: row.quantity
+      })) : [];
+      
+      setCartItems(cartItems);
+    } catch (err) {
+      console.error('Failed to refresh cart:', err);
+      setError('Failed to refresh your cart. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const toggleCart = () => {
     setCartOpen(prevState => !prevState);
   };
@@ -175,6 +203,7 @@ export const CartProvider = ({ children }) => {
     removeFromCart,
     updateQuantity,
     clearCart,
+    refreshCart,
     toggleCart,
     setCartOpen
   };

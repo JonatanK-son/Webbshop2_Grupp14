@@ -41,8 +41,8 @@ const Checkout = () => {
   const [orderComplete, setOrderComplete] = useState(false);
   const [orderNumber, setOrderNumber] = useState(null);
 
-  const { cartItems, subtotal, shipping, total, clearCart } = useCart();
-  const { currentUser, isAuthenticated } = useUser();
+  const { cartItems, subtotal, shipping, total, clearCart, refreshCart } = useCart();
+  const { currentUser, isAuthenticated, logout } = useUser();
   const navigate = useNavigate();
 
   const handleNext = () => {
@@ -72,6 +72,13 @@ const Checkout = () => {
       return;
     }
 
+    // Check if token exists
+    const token = localStorage.getItem('token');
+    if (!token) {
+      setError("Authentication token missing. Please log out and log in again.");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
@@ -79,11 +86,38 @@ const Checkout = () => {
       const result = await cartService.checkout(currentUser.id);
       setOrderNumber(result.id);
       setOrderComplete(true);
-      clearCart();
+      refreshCart();
       setActiveStep((prevStep) => prevStep + 1);
     } catch (err) {
       console.error("Checkout error:", err);
-      setError(err.response?.data?.message || "An error occurred during checkout");
+      
+      // Handle different error cases with more specific messages
+      if (err.response) {
+        if (err.response.status === 401) {
+          setError("Authentication failed. Please log out and log in again.");
+          
+          // Add a slight delay before navigating to login
+          setTimeout(() => {
+            // Force logout since token is invalid
+            logout();
+            navigate('/login', { state: { from: '/checkout', message: 'Please log in again to complete your order' } });
+          }, 2000);
+        } else if (err.response.status === 409 && err.response.data.message === "Cart is already paid") {
+          // Handle case where cart is already paid
+          setError("Your order has already been processed successfully!");
+          
+          // Refresh the cart
+          refreshCart();
+          
+          // Show the success screen
+          setOrderComplete(true);
+          setActiveStep(steps.length - 1);
+        } else {
+          setError(err.response.data.message || "An error occurred during checkout");
+        }
+      } else {
+        setError("Could not connect to the server. Please try again later.");
+      }
     } finally {
       setLoading(false);
     }

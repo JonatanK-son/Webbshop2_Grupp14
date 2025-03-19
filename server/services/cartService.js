@@ -3,7 +3,7 @@ const { cart, cart_row, products } = require('../models');
 class CartService {
   async getUserCart(userId) {
     const userCart = await cart.findOne({
-      where: { userId },
+      where: { userId, payed: false },
       include: [{
         model: cart_row,
         include: [products]

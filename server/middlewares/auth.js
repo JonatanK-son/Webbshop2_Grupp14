@@ -1,6 +1,9 @@
 const jwt = require('jsonwebtoken');
 const { users } = require('../models');
 
+// Set JWT secret from environment variable or use a default for development (same as in userService)
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
+
 /**
  * Middleware to authenticate user based on JWT
  */
@@ -15,8 +18,8 @@ const authenticateUser = async (req, res, next) => {
     
     const token = authHeader.split(' ')[1];
     
-    // Verify the token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    // Verify the token using the same JWT_SECRET as userService
+    const decoded = jwt.verify(token, JWT_SECRET);
     
     // Find the user
     const user = await users.findOne({ where: { id: decoded.id } });
