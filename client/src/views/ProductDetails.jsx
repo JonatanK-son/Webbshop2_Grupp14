@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Container } from "@mui/material";
 import Description from "../components/Description";
+import RatingComponent from "../components/RatingSystem";
 
 function ProductDetails() {
   const [quant, setQuant] = useState(1); // Start with 1 to avoid issues
@@ -23,7 +24,11 @@ function ProductDetails() {
             onRemove={removeQuant}
             onSetOrderedQuant={setOrderedQuant}
           />
+          <RatingComponent
+            productId={}
+          />
         </section>
+
       </Container>
     </main>
   );
