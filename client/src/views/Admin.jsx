@@ -26,6 +26,7 @@ import {
   Tab,
   Alert,
   CircularProgress,
+  Chip,
 } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import EditIcon from "@mui/icons-material/Edit";
@@ -62,7 +63,14 @@ function Admin() {
     description: "",
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [tabValue, setTabValue] = useState(0);
+  
+  // Initialize tab value based on URL parameters
+  const initTabValue = () => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('returnToOrders') === 'true' ? 1 : 0;
+  };
+  const [tabValue, setTabValue] = useState(initTabValue());
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [stats, setStats] = useState(null);
@@ -120,7 +128,7 @@ function Admin() {
     };
 
     fetchProducts();
-  }, []);
+  }, [productService]);
 
   // Fetch orders
   useEffect(() => {
@@ -141,7 +149,7 @@ function Admin() {
     if (tabValue === 1) {
       fetchOrders();
     }
-  }, [tabValue]);
+  }, [tabValue, adminService]);
 
   // Fetch dashboard stats
   useEffect(() => {
@@ -155,7 +163,7 @@ function Admin() {
     };
 
     fetchStats();
-  }, []);
+  }, [adminService]);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);
@@ -418,55 +426,69 @@ function Admin() {
           <Typography variant="h5" component="h2" sx={{ mb: 3 }}>
             Order Management
           </Typography>
-          <TableContainer component={Paper}>
-            <Table sx={{ minWidth: 650 }} aria-label="orders table">
-              <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
-                <TableRow>
-                  <StyledTableCell>Order ID</StyledTableCell>
-                  <StyledTableCell>Customer</StyledTableCell>
-                  <StyledTableCell>Date</StyledTableCell>
-                  <StyledTableCell>Total</StyledTableCell>
-                  <StyledTableCell>Status</StyledTableCell>
-                  <StyledTableCell>Actions</StyledTableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {orders.map((order) => (
-                  <StyledTableRow key={order.id}>
-                    <TableCell>{order.id}</TableCell>
-                    <TableCell>{order.customer}</TableCell>
-                    <TableCell>
-                      {new Date(order.date).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>${order.total}</TableCell>
-                    <TableCell>
-                      <FormControl size="small" fullWidth>
-                        <Select
-                          value={order.status}
-                          onChange={(e) =>
-                            handleUpdateOrderStatus(order.id, e.target.value)
-                          }
+          {orders.length === 0 ? (
+            <Alert severity="info">No orders found</Alert>
+          ) : (
+            <TableContainer component={Paper}>
+              <Table sx={{ minWidth: 650 }} aria-label="orders table">
+                <TableHead sx={{ backgroundColor: "#f5f5f5" }}>
+                  <TableRow>
+                    <StyledTableCell>Order ID</StyledTableCell>
+                    <StyledTableCell>User ID</StyledTableCell>
+                    <StyledTableCell>Date</StyledTableCell>
+                    <StyledTableCell align="right">Total</StyledTableCell>
+                    <StyledTableCell>Status</StyledTableCell>
+                    <StyledTableCell>Payment</StyledTableCell>
+                    <StyledTableCell>Actions</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {orders.map((order) => (
+                    <StyledTableRow key={order.id}>
+                      <TableCell>{order.id}</TableCell>
+                      <TableCell>{order.userId}</TableCell>
+                      <TableCell>
+                        {new Date(order.orderDate).toLocaleDateString()}
+                      </TableCell>
+                      <TableCell align="right">${order.totalAmount?.toFixed(2)}</TableCell>
+                      <TableCell>
+                        <FormControl size="small" fullWidth>
+                          <Select
+                            value={order.status || "pending"}
+                            onChange={(e) =>
+                              handleUpdateOrderStatus(order.id, e.target.value)
+                            }
+                          >
+                            <MenuItem value="pending">Pending</MenuItem>
+                            <MenuItem value="processing">Processing</MenuItem>
+                            <MenuItem value="shipped">Shipped</MenuItem>
+                            <MenuItem value="delivered">Delivered</MenuItem>
+                            <MenuItem value="cancelled">Cancelled</MenuItem>
+                          </Select>
+                        </FormControl>
+                      </TableCell>
+                      <TableCell>
+                        <Chip 
+                          label={order.paymentStatus?.toUpperCase() || "PENDING"} 
+                          color={order.paymentStatus === 'paid' ? 'success' : 'warning'}
+                          size="small"
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          size="small"
+                          variant="outlined"
+                          onClick={() => navigate(`/orders/${order.id}`, { state: { from: 'admin' } })}
                         >
-                          <MenuItem value="Processing">Processing</MenuItem>
-                          <MenuItem value="Shipped">Shipped</MenuItem>
-                          <MenuItem value="Delivered">Delivered</MenuItem>
-                          <MenuItem value="Cancelled">Cancelled</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        size="small"
-                        onClick={() => navigate(`/admin/orders/${order.id}`)}
-                      >
-                        View Details
-                      </Button>
-                    </TableCell>
-                  </StyledTableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                          View Details
+                        </Button>
+                      </TableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          )}
         </>
       )}
 

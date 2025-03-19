@@ -116,7 +116,7 @@ function Home() {
     };
 
     fetchProducts();
-  }, []);
+  }, [productService]);
 
   const handleAddToCart = (product) => {
     addToCart(product);
