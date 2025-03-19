@@ -5,12 +5,24 @@ module.exports = (sequelize, DataTypes) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    title: {
-      type: DataTypes.STRING(100),
+    rating: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        min: 1,
+        max: 5
+      }
+    },
+    comment: {
+      type: DataTypes.TEXT,
+      allowNull: true,
+    },
+    userId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
-    body: {
-      type: DataTypes.TEXT,
+    productId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     }
   });

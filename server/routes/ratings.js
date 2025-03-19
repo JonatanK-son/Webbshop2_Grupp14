@@ -60,4 +60,38 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
+// Add this new route
+router.get('/product/:productId/average', async (req, res) => {
+  try {
+    const ratings = await ratingService.getProductRatings(req.params.productId);
+    const averageRating = ratings.length > 0
+      ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
+      : 0;
+    res.json(averageRating);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update the route for creating a new rating
+router.post('/product/:productId', async (req, res) => {
+  try {
+    const { userId, rating, comment } = req.body;
+    if (!userId || !rating || !rating.rating) {
+      return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    const newRating = await ratingService.createRating({
+      productId: parseInt(req.params.productId),
+      userId: parseInt(userId),
+      rating: rating.rating,
+      comment: rating.comment
+    });
+    res.status(201).json(newRating);
+  } catch (error) {
+    console.error('Error creating rating:', error);
+    res.status(400).json({ error: error.message });
+  }
+});
+
 module.exports = router; 

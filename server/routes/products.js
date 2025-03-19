@@ -1,13 +1,34 @@
 const express = require('express');
 const router = express.Router();
 const productService = require('../services/productService');
+const ratingService = require('../services/ratingService');
 
 // Get all products
 router.get('/', async (req, res) => {
   try {
     const allProducts = await productService.getAllProducts();
-    res.json(allProducts);
+    const productsWithRatings = await Promise.all(allProducts.map(async (product) => {
+      try {
+        const ratings = await ratingService.getProductRatings(product.id);
+        const averageRating = ratings && ratings.length > 0
+          ? ratings.reduce((sum, r) => sum + r.rating, 0) / ratings.length
+          : 0;
+        return {
+          ...product.toJSON(),
+          averageRating
+        };
+      } catch (error) {
+        console.error(`Error getting ratings for product ${product.id}:`, error);
+        // If there's an error getting ratings, return product with 0 rating
+        return {
+          ...product.toJSON(),
+          averageRating: 0
+        };
+      }
+    }));
+    res.json(productsWithRatings);
   } catch (error) {
+    console.error('Error in products route:', error);
     res.status(500).json({ error: error.message });
   }
 });

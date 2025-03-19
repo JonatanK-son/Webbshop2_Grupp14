@@ -2,9 +2,14 @@ const { ratings } = require('../models');
 
 class RatingService {
   async getProductRatings(productId) {
-    return await ratings.findAll({
-      where: { productId }
-    });
+    try {
+      return await ratings.findAll({
+        where: { productId }
+      });
+    } catch (error) {
+      console.error(`Error getting ratings for product ${productId}:`, error);
+      return []; // Return empty array if there's an error
+    }
   }
 
   async getUserRatings(userId) {
