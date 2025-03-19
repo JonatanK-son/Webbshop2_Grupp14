@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { Container } from "@mui/material";
 import Description from "../components/Description";
+import RatingComponent from "../components/RatingComponent";
+import { useParams } from "react-router-dom";
 
 function ProductDetails() {
+  const { id } = useParams();
   const [quant, setQuant] = useState(1); // Start with 1 to avoid issues
   const [orderedQuant, setOrderedQuant] = useState(0);
 
@@ -23,6 +26,11 @@ function ProductDetails() {
             onRemove={removeQuant}
             onSetOrderedQuant={setOrderedQuant}
           />
+        </section>
+      </Container>
+      <Container component="section" maxWidth={"lg"} sx={{mt: 3}}>
+        <section className="rating">
+        <RatingComponent productId={id} />
         </section>
       </Container>
     </main>

@@ -1,10 +1,21 @@
-const { ratings } = require('../models');
+const { ratings, users } = require('../models');
 
 class RatingService {
   async getProductRatings(productId) {
-    return await ratings.findAll({
-      where: { productId }
-    });
+    try {
+      return await ratings.findAll({
+        where: { productId },
+        include: [{
+          model: users,
+          as: 'user',
+          attributes: ['username', 'email'] // Only include necessary user fields
+        }],
+        order: [['createdAt', 'DESC']] // Show newest ratings first
+      });
+    } catch (error) {
+      console.error(`Error getting ratings for product ${productId}:`, error);
+      return []; // Return empty array if there's an error
+    }
   }
 
   async getUserRatings(userId) {
