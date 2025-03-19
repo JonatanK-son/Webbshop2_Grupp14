@@ -27,9 +27,9 @@ const cartService = {
   },
 
   // Update cart item quantity
-  updateCartItem: async (userId, productId, quantity) => {
+  updateCartItem: async (userId, itemId, quantity) => {
     try {
-      const response = await api.put(`/cart/${userId}/items/${productId}`, {
+      const response = await api.put(`/cart/${userId}/items/${itemId}`, {
         quantity
       });
       return response.data;
@@ -40,9 +40,9 @@ const cartService = {
   },
 
   // Remove item from cart
-  removeFromCart: async (userId, productId) => {
+  removeFromCart: async (userId, itemId) => {
     try {
-      await api.delete(`/cart/${userId}/items/${productId}`);
+      await api.delete(`/cart/${userId}/items/${itemId}`);
       return true;
     } catch (error) {
       console.error('Error removing item from cart:', error);
@@ -57,6 +57,17 @@ const cartService = {
       return true;
     } catch (error) {
       console.error('Error clearing cart:', error);
+      throw error;
+    }
+  },
+  
+  // Checkout
+  checkout: async (userId) => {
+    try {
+      const response = await api.post(`/cart/${userId}/checkout`);
+      return response.data;
+    } catch (error) {
+      console.error('Error during checkout:', error);
       throw error;
     }
   }

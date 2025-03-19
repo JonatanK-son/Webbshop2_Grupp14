@@ -61,7 +61,7 @@ function Products() {
     };
 
     fetchProducts();
-  }, []);
+  }, [api]);
 
   const handleProductClick = (product) => {
     console.log("Product clicked: ", product);

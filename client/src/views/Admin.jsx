@@ -120,7 +120,7 @@ function Admin() {
     };
 
     fetchProducts();
-  }, []);
+  }, [productService]);
 
   // Fetch orders
   useEffect(() => {
@@ -141,7 +141,7 @@ function Admin() {
     if (tabValue === 1) {
       fetchOrders();
     }
-  }, [tabValue]);
+  }, [tabValue, adminService]);
 
   // Fetch dashboard stats
   useEffect(() => {
@@ -155,7 +155,7 @@ function Admin() {
     };
 
     fetchStats();
-  }, []);
+  }, [adminService]);
 
   const handleTabChange = (event, newValue) => {
     setTabValue(newValue);

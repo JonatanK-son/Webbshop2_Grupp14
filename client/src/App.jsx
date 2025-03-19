@@ -14,6 +14,8 @@ import { useState } from 'react';
 import React from 'react';
 import { useCart } from './context/CartContext';
 import { useUser } from './context/UserContext';
+import CartDrawer from './components/CartDrawer';
+import CartButton from './components/CartButton';
 
 const Main = styled('main')(({ theme }) => ({
   flexGrow: 1,
@@ -234,15 +236,7 @@ function App() {
               </>
             )}
             
-            <IconButton 
-              color="inherit" 
-              onClick={toggleCart} 
-              sx={{ ml: { xs: 0.5, sm: 1 } }}
-            >
-              <Badge badgeContent={cartItemCount} color="primary">
-                <ShoppingCartIcon />
-              </Badge>
-            </IconButton>
+            <CartButton />
           </Box>
         </Toolbar>
       </AppBar>
@@ -273,150 +267,7 @@ function App() {
       </Collapse>
       
       {/* Cart Drawer */}
-      <Drawer
-        anchor="right"
-        open={cartOpen}
-        onClose={() => setCartOpen(false)}
-        sx={{
-          '& .MuiDrawer-paper': {
-            width: { xs: '100%', sm: 350 },
-            boxSizing: 'border-box',
-          },
-        }}
-      >
-        <CartDrawerHeader>
-          <Typography variant="subtitle1" sx={{ fontWeight: 'medium' }}>Your Cart ({cartItemCount})</Typography>
-          <IconButton size="small" onClick={() => setCartOpen(false)}>
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        </CartDrawerHeader>
-        
-        {cartItems.length === 0 ? (
-          <Box sx={{ p: 2, textAlign: 'center' }}>
-            <Typography variant="body2">Your cart is empty</Typography>
-            <Button 
-              variant="contained" 
-              size="small"
-              onClick={() => {
-                navigate('/products');
-                setCartOpen(false);
-              }}
-              sx={{ 
-                mt: 1.5,
-                backgroundColor: '#000',
-                '&:hover': {
-                  backgroundColor: '#333',
-                }
-              }}
-            >
-              Shop Now
-            </Button>
-          </Box>
-        ) : (
-          <>
-            <List sx={{ flexGrow: 1, overflow: 'auto', py: 0 }}>
-              {cartItems.map((item, index) => (
-                <React.Fragment key={item.id}>
-                  <ListItem 
-                    dense
-                    secondaryAction={
-                      <IconButton edge="end" size="small" aria-label="delete" onClick={() => removeFromCart(item.id)}>
-                        <DeleteIcon fontSize="small" />
-                      </IconButton>
-                    }
-                  >
-                    <ListItemAvatar>
-                      <Avatar 
-                        variant="rounded" 
-                        src={item.image} 
-                        alt={item.name}
-                        sx={{ width: 40, height: 40, mr: 1 }}
-                      />
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={
-                        <Typography variant="body2" noWrap sx={{ fontWeight: 'medium' }}>
-                          {item.name}
-                        </Typography>
-                      }
-                      secondary={
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
-                          <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
-                            ${item.price}
-                          </Typography>
-                          <QuantityControl>
-                            <IconButton 
-                              size="small" 
-                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              sx={{ p: 0.3 }}
-                            >
-                              <RemoveIcon fontSize="small" />
-                            </IconButton>
-                            <Typography variant="caption" sx={{ mx: 0.5 }}>
-                              {item.quantity}
-                            </Typography>
-                            <IconButton 
-                              size="small" 
-                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              sx={{ p: 0.3 }}
-                            >
-                              <AddIcon fontSize="small" />
-                            </IconButton>
-                          </QuantityControl>
-                        </Box>
-                      }
-                    />
-                  </ListItem>
-                  {index < cartItems.length - 1 && <Divider />}
-                </React.Fragment>
-              ))}
-            </List>
-            
-            <Paper 
-              elevation={0} 
-              sx={{ 
-                p: 1.5, 
-                borderTop: '1px solid #e0e0e0',
-                position: 'sticky',
-                bottom: 0,
-                backgroundColor: '#fff'
-              }}
-            >
-              <TotalContainer>
-                <Typography variant="body2">Subtotal</Typography>
-                <Typography variant="body2">${subtotal}</Typography>
-              </TotalContainer>
-              
-              <TotalContainer>
-                <Typography variant="body2">Shipping</Typography>
-                <Typography variant="body2">${shipping}</Typography>
-              </TotalContainer>
-              
-              <Divider sx={{ my: 1 }} />
-              
-              <TotalContainer>
-                <Typography variant="subtitle2">Total</Typography>
-                <Typography variant="subtitle2">${total}</Typography>
-              </TotalContainer>
-              
-              <Button 
-                variant="contained" 
-                fullWidth 
-                size="small"
-                sx={{ 
-                  mt: 1.5,
-                  backgroundColor: '#000',
-                  '&:hover': {
-                    backgroundColor: '#333',
-                  }
-                }}
-              >
-                Checkout
-              </Button>
-            </Paper>
-          </>
-        )}
-      </Drawer>
+      <CartDrawer />
       
       <Main>
         <Container 
