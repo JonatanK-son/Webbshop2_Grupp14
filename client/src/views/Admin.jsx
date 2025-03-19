@@ -225,6 +225,7 @@ function Admin() {
         const newProduct = await productService.createProduct(productData);
         setProducts([...products, newProduct]);
 
+        // Optional: Trigger image generation API if needed
         await fetch("http://localhost:5000/api/gemini/generate-image", {
           method: "POST",
           headers: {
@@ -541,7 +542,7 @@ function Admin() {
                 inputRef={imageRef}
                 fullWidth
                 required
-                value={ currentProduct.image || `http://localhost:5000/images/${currentProduct.name}.png` }
+                value={ currentProduct.image || "" } // Don't set a default path since we now generate a proper URL
               />
             </Grid>
             <Grid item xs={12}>
