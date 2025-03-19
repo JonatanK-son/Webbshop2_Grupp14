@@ -162,11 +162,21 @@ const RatingComponent = ({ productId }) => {
                   <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
                     <Rating value={rating.rating} readOnly size="small" />
                     <Typography variant="body2" sx={{ ml: 1, color: 'text.secondary' }}>
-                      by User {rating.userId}
+                      by {rating.user ? rating.user.username : 'Anonymous'}
                     </Typography>
                   </Box>
                 }
-                secondary={rating.comment || 'No comment provided'}
+                secondary={
+                  <React.Fragment>
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      color="text.primary"
+                    >
+                      {rating.comment || 'No comment provided'}
+                    </Typography>
+                  </React.Fragment>
+                }
               />
             </ListItem>
             {index < ratings.length - 1 && <Divider />}

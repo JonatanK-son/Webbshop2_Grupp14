@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  return sequelize.define("ratings", {
+  const Rating = sequelize.define("ratings", {
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -26,4 +26,13 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: false,
     }
   });
+
+  Rating.associate = (models) => {
+    Rating.belongsTo(models.users, {
+      foreignKey: 'userId',
+      as: 'user'
+    });
+  };
+
+  return Rating;
 };
