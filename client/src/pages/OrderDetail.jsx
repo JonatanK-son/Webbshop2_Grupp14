@@ -16,7 +16,8 @@ import {
   CircularProgress, 
   Alert 
 } from '@mui/material';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useUser } from '../context/UserContext';
 import { orderService } from '../services';
 
@@ -48,6 +49,7 @@ const OrderDetail = () => {
 
   const { currentUser, isAuthenticated } = useUser();
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchOrderDetails = async () => {
@@ -109,10 +111,18 @@ const OrderDetail = () => {
       <Box sx={{ mb: 4 }}>
         <Button 
           variant="outlined" 
-          onClick={() => navigate('/orders')}
+          onClick={() => {
+            // Check if we came from admin page
+            if (location.state?.from === 'admin') {
+              navigate('/admin?returnToOrders=true');
+            } else {
+              navigate('/orders');
+            }
+          }}
           sx={{ mb: 2 }}
+          startIcon={<ArrowBackIcon />}
         >
-          Back to Orders
+          {location.state?.from === 'admin' ? 'Back to Admin' : 'Back to Orders'}
         </Button>
         <Typography variant="h4" component="h1" gutterBottom>
           Order Details

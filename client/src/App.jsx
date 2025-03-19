@@ -1,7 +1,8 @@
+import React, { useState } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Box, AppBar, Toolbar, Typography, Button, Menu, MenuItem, 
   Container, IconButton, Badge, Collapse, Drawer, List, ListItem, ListItemText, 
-  ListItemAvatar, Avatar, Divider, Paper } from '@mui/material';
+  ListItemAvatar, Avatar, Divider, Paper, ListItemIcon } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -10,8 +11,9 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import PersonIcon from '@mui/icons-material/Person';
-import { useState } from 'react';
-import React from 'react';
+import LogoutIcon from '@mui/icons-material/Logout';
+import ReceiptIcon from '@mui/icons-material/Receipt';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import { useCart } from './context/CartContext';
 import { useUser } from './context/UserContext';
 import CartDrawer from './components/CartDrawer';
@@ -176,7 +178,21 @@ function App() {
                 <IconButton 
                   color="inherit"
                   onClick={handleUserMenuOpen}
-                  sx={{ mx: { xs: 0.5, sm: 1 } }}
+                  sx={{ 
+                    mx: { xs: 0.5, sm: 1 },
+                    border: '1px solid transparent',
+                    transition: 'all 0.2s',
+                    '&:hover': {
+                      backgroundColor: 'rgba(0,0,0,0.04)',
+                      borderColor: 'rgba(0,0,0,0.1)'
+                    },
+                    ...(Boolean(userMenuAnchor) && {
+                      backgroundColor: 'rgba(0,0,0,0.04)'
+                    })
+                  }}
+                  aria-label="account menu"
+                  aria-controls="user-menu"
+                  aria-haspopup="true"
                 >
                   <PersonIcon />
                 </IconButton>
@@ -184,8 +200,18 @@ function App() {
                   anchorEl={userMenuAnchor}
                   open={Boolean(userMenuAnchor)}
                   onClose={handleUserMenuClose}
+                  PaperProps={{
+                    elevation: 3,
+                    sx: { 
+                      minWidth: 200,
+                      borderRadius: '8px',
+                      mt: 1.5
+                    }
+                  }}
+                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
                 >
-                  <MenuItem disabled>
+                  <MenuItem disabled sx={{ opacity: 0.7, py: 1 }}>
                     <Typography variant="body2">
                       Signed in as <strong>{currentUser?.username}</strong>
                     </Typography>
@@ -195,11 +221,34 @@ function App() {
                     <MenuItem onClick={() => {
                       handleUserMenuClose();
                       navigate('/admin');
-                    }}>
+                    }}
+                    sx={{ py: 1.5, '&:hover': { backgroundColor: '#f5f5f5' } }}
+                    >
+                      <ListItemIcon>
+                        <DashboardIcon fontSize="small" />
+                      </ListItemIcon>
                       Admin Dashboard
                     </MenuItem>
                   )}
-                  <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                  <MenuItem onClick={() => {
+                    handleUserMenuClose();
+                    navigate('/orders');
+                  }}
+                  sx={{ py: 1.5, '&:hover': { backgroundColor: '#f5f5f5' } }}
+                  >
+                    <ListItemIcon>
+                      <ReceiptIcon fontSize="small" />
+                    </ListItemIcon>
+                    My Orders
+                  </MenuItem>
+                  <MenuItem onClick={handleLogout}
+                  sx={{ py: 1.5, '&:hover': { backgroundColor: '#f5f5f5' } }}
+                  >
+                    <ListItemIcon>
+                      <LogoutIcon fontSize="small" color="error" />
+                    </ListItemIcon>
+                    <Typography color="error">Logout</Typography>
+                  </MenuItem>
                 </Menu>
               </>
             ) : (

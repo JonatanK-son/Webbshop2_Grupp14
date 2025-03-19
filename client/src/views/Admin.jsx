@@ -63,7 +63,14 @@ function Admin() {
     description: "",
   });
   const [isEditing, setIsEditing] = useState(false);
-  const [tabValue, setTabValue] = useState(0);
+  
+  // Initialize tab value based on URL parameters
+  const initTabValue = () => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('returnToOrders') === 'true' ? 1 : 0;
+  };
+  const [tabValue, setTabValue] = useState(initTabValue());
+  
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [stats, setStats] = useState(null);
@@ -471,7 +478,7 @@ function Admin() {
                         <Button
                           size="small"
                           variant="outlined"
-                          onClick={() => navigate(`/orders/${order.id}`)}
+                          onClick={() => navigate(`/orders/${order.id}`, { state: { from: 'admin' } })}
                         >
                           View Details
                         </Button>

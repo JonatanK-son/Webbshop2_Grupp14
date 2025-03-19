@@ -69,7 +69,7 @@ const OrderHistory = () => {
   }, [currentUser, isAuthenticated]);
 
   const handleViewOrder = (orderId) => {
-    navigate(`/orders/${orderId}`);
+    navigate(`/orders/${orderId}`, { state: { from: 'orders' } });
   };
 
   if (!isAuthenticated) {
@@ -99,6 +99,9 @@ const OrderHistory = () => {
     <Container maxWidth="md" sx={{ py: 4 }}>
       <Typography variant="h4" component="h1" gutterBottom>
         Your Orders
+      </Typography>
+      <Typography variant="body1" color="text.secondary" paragraph sx={{ mb: 3 }}>
+        View and track all of your current and past orders. Click on "Details" to see more information about a specific order.
       </Typography>
 
       {loading ? (
