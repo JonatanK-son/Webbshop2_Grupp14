@@ -7,11 +7,32 @@ import SearchIcon from '@mui/icons-material/Search';
 import api from '../services/api';
 import AddToCartButton from "../components/AddToCartButton";
 
+// Updated StyledCard with more compact styling and no hover effects
 const StyledCard = styled(Card)(({ theme }) => ({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
   borderRadius: 0,
+  border: '1px solid #f0f0f0',
+  boxShadow: 'none',
+}));
+
+// Create a styled component for consistent image containers
+const ImageContainer = styled(Box)(({ theme }) => ({
+  position: 'relative',
+  paddingTop: '100%', // 1:1 Aspect ratio (square)
+  width: '100%',
+  overflow: 'hidden',
+}));
+
+// Updated CardMedia styling to maintain aspect ratio
+const StyledCardMedia = styled(CardMedia)(({ theme }) => ({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover', // This ensures the image covers the area without distortion
 }));
 
 const PriceTypography = styled(Typography)(({ theme }) => ({
@@ -164,27 +185,29 @@ function Products() {
             <Grid item xs={6} sm={4} md={3} lg={2} key={product.id}>
               <StyledCard elevation={0}>
                 <CardActionArea onClick={() => handleProductClick(product)}>
-                  <CardMedia
-                    component="img"
-                    height="140"
-                    image={product.image || 'https://via.placeholder.com/300x200'}
-                    alt={product.name}
-                    style={{borderRadius: '8px 8px 0 0'}}
-                  />
-                  <CardContent sx={{ p: 1, pb: 0.5 }}>
-                    <Typography gutterBottom variant="body2" component="div" noWrap sx={{ fontWeight: 'medium' }}>
+                  <ImageContainer>
+                    <StyledCardMedia
+                      component="img"
+                      image={product.image || 'https://via.placeholder.com/300x300'}
+                      alt={product.name}
+                    />
+                  </ImageContainer>
+                  <CardContent sx={{ p: 1, pb: 0.5, height: '70px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <Typography variant="body2" component="div" noWrap sx={{ fontWeight: 'medium', mb: 0.5 }}>
                       {product.name}
                     </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {product.category}
-                    </Typography>
-                    <PriceTypography variant="body2" sx={{ mt: 0.5 }}>
-                      ${product.price}
-                    </PriceTypography>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" display="block" sx={{ fontSize: '0.7rem' }}>
+                        {product.category}
+                      </Typography>
+                      <PriceTypography variant="body2">
+                        ${product.price}
+                      </PriceTypography>
+                    </Box>
                   </CardContent>
                 </CardActionArea>
                 <Box sx={{ p: 1, pt: 0 }}>
-                  <AddToCartButton product={product}/>
+                  <AddToCartButton product={product} size="small"/>
                 </Box>
               </StyledCard>
             </Grid>

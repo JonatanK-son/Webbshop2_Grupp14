@@ -4,6 +4,26 @@ import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
 import AddToCartButton from "../components/AddToCartButton";
 import { useLocation } from "react-router-dom";
+import { styled } from "@mui/material/styles";
+
+// Create a styled component for the product image container with simplified styling
+const ProductImageContainer = styled(Box)(({ theme }) => ({
+  position: 'relative',
+  width: '100%',
+  borderRadius: 4,
+  overflow: 'hidden',
+  border: '1px solid #e0e0e0',
+  boxShadow: 'none',
+}));
+
+// Create a styled component for the product image with consistent ratio
+const ProductImage = styled('img')(({ theme }) => ({
+  width: '100%',
+  height: 'auto',
+  display: 'block',
+  aspectRatio: '1 / 1', // Force 1:1 aspect ratio
+  objectFit: 'cover', // Ensure the image covers the area without distortion
+}));
 
 const Description = () => {
   // Get the product data passed from the previous page (via navigate)
@@ -21,15 +41,21 @@ const Description = () => {
   const handleRemove = () => setQuantity((prev) => Math.max(1, prev - 1));
 
   return (
-    <Paper elevation={3} sx={{ padding: 3, maxWidth: 800, margin: "auto" }}>
-      <Grid container spacing={2} alignItems="center">
+    <Paper elevation={1} sx={{ 
+      padding: { xs: 2, sm: 3 }, 
+      maxWidth: 800, 
+      margin: "auto",
+      borderRadius: 1,
+    }}>
+      <Grid container spacing={2} alignItems="flex-start">
         {/* Left side: Image */}
         <Grid item xs={12} sm={5}>
-          <img
-            src={product.image}
-            alt={product.name}
-            style={{ width: "100%", height: "auto", borderRadius: 8 }}
-          />
+          <ProductImageContainer>
+            <ProductImage
+              src={product.image || 'https://via.placeholder.com/400x400'}
+              alt={product.name}
+            />
+          </ProductImageContainer>
         </Grid>
 
         {/* Right side: Description, Price, and Order */}
@@ -38,36 +64,36 @@ const Description = () => {
             {product.name}
           </Typography>
 
-          <Typography variant="body2" color="text.secondary" paragraph>
+          <Typography variant="body2" color="text.secondary" paragraph sx={{ fontSize: '0.9rem', lineHeight: 1.5 }}>
             {product.description}
           </Typography>
 
           <Stack direction="row" alignItems="center" spacing={2}>
-            <Typography variant="h6" fontWeight="bold">
+            <Typography variant="h6" fontWeight="bold" color="primary">
               ${product.price.toFixed(2)}
             </Typography>
           </Stack>
 
-          <Divider sx={{ my: 2 }} />
+          <Divider sx={{ my: 1.5 }} />
 
           <Stack direction="row" spacing={2} alignItems="center">
             <Stack
               direction="row"
               alignItems="center"
-              sx={{ border: "1px solid gray", borderRadius: 2 }}
+              sx={{ border: "1px solid #e0e0e0", borderRadius: 1 }}
             >
               <IconButton onClick={handleRemove} size="small">
-                <RemoveIcon />
+                <RemoveIcon fontSize="small" />
               </IconButton>
-              <Typography variant="body1" sx={{ mx: 2 }}>
+              <Typography variant="body2" sx={{ mx: 1.5 }}>
                 {quantity}
               </Typography>
               <IconButton onClick={handleAdd} size="small">
-                <AddIcon />
+                <AddIcon fontSize="small" />
               </IconButton>
             </Stack>
 
-            <Box sx={{ p: 1, pt: 0 }}>
+            <Box>
               <AddToCartButton product={product} quantity={quantity} />
             </Box>
           </Stack>
