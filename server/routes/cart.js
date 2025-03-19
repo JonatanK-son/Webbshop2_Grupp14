@@ -85,8 +85,9 @@ router.post('/:userId/checkout', authenticateUser, async (req, res) => {
       return res.status(403).json({ message: 'Unauthorized' });
     }
     
-    const completedOrder = await cartService.checkout(req.params.userId);
-    res.json(completedOrder);
+    const { shippingAddress } = req.body;
+    const checkoutResult = await cartService.checkout(req.params.userId, shippingAddress);
+    res.json(checkoutResult);
   } catch (error) {
     if (error.message === 'Cart not found' || error.message === 'Cannot checkout empty cart') {
       res.status(400).json({ message: error.message });

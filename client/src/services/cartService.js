@@ -62,12 +62,18 @@ const cartService = {
   },
   
   // Checkout
-  checkout: async (userId) => {
+  checkout: async (userId, shippingAddress = null) => {
     try {
-      const response = await api.post(`/cart/${userId}/checkout`);
+      console.log('Starting checkout process for user:', userId);
+      console.log('Shipping address:', shippingAddress);
+      
+      const response = await api.post(`/cart/${userId}/checkout`, { shippingAddress });
+      console.log('Checkout response:', response.data);
+      
       return response.data;
     } catch (error) {
       console.error('Error during checkout:', error);
+      console.error('Error details:', error.response?.data);
       throw error;
     }
   }

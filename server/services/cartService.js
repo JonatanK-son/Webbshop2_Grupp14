@@ -1,4 +1,5 @@
 const { cart, cart_row, products } = require('../models');
+const orderService = require('./orderService');
 
 class CartService {
   async getUserCart(userId) {
@@ -22,7 +23,7 @@ class CartService {
   }
 
   async addItemToCart(userId, productId, quantity) {
-    let userCart = await cart.findOne({ where: { userId } });
+    let userCart = await cart.findOne({ where: { userId, payed: false } });
     
     if (!userCart) {
       userCart = await cart.create({ 
@@ -43,6 +44,13 @@ class CartService {
     if (existingItem) {
       // Update quantity if product already exists
       existingItem.quantity += quantity;
+      
+      // Get the product to calculate the new amount
+      const product = await products.findByPk(productId);
+      if (product) {
+        existingItem.amount = product.price * existingItem.quantity;
+      }
+      
       await existingItem.save();
       
       // Update total price
@@ -60,7 +68,8 @@ class CartService {
     const cartItem = await cart_row.create({
       cartId: userCart.id,
       productId,
-      quantity
+      quantity,
+      amount: product.price * quantity
     });
 
     // Update total price
@@ -70,7 +79,10 @@ class CartService {
   }
 
   async updateCartItem(itemId, quantity) {
-    const cartItem = await cart_row.findByPk(itemId);
+    const cartItem = await cart_row.findByPk(itemId, {
+      include: [products]  // Include product to get the price
+    });
+    
     if (!cartItem) {
       throw new Error('Cart item not found');
     }
@@ -82,6 +94,10 @@ class CartService {
     }
     
     cartItem.quantity = quantity;
+    // Update amount based on quantity and product price
+    if (cartItem.product) {
+      cartItem.amount = cartItem.product.price * quantity;
+    }
     await cartItem.save();
     
     // Update total price
@@ -138,8 +154,14 @@ class CartService {
     return total;
   }
 
-  async checkout(userId) {
-    const userCart = await cart.findOne({ where: { userId } });
+  async checkout(userId, shippingAddress = null) {
+    const userCart = await cart.findOne({ 
+      where: { userId, payed: false },
+      include: [{
+        model: cart_row,
+        include: [products]
+      }]
+    });
     
     if (!userCart) {
       throw new Error('Cart not found');
@@ -159,14 +181,24 @@ class CartService {
     userCart.payed = true;
     await userCart.save();
     
+    // Create order if shipping address is provided
+    let order = null;
+    if (shippingAddress) {
+      order = await orderService.createOrder(userId, userCart.id, shippingAddress);
+    }
+    
     // Create a new cart for the user
-    await cart.create({ 
+    const newCart = await cart.create({ 
       userId, 
       payed: false, 
       totalPris: 0 
     });
     
-    return userCart;
+    return {
+      checkedOutCart: userCart,
+      newCart,
+      order
+    };
   }
 }
 

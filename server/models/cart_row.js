@@ -14,6 +14,11 @@ module.exports = (sequelize, DataTypes) => {
             validate: {
                 min: 1
             }
+        },
+        amount: {
+            type: DataTypes.DOUBLE,
+            allowNull: false,
+            defaultValue: 0
         }
     });
 

@@ -79,12 +79,47 @@ const Checkout = () => {
       return;
     }
 
+    // Validate shipping info is complete
+    if (activeStep === 2 && !validateShippingInfo()) {
+      setError("Please complete all shipping information fields");
+      setActiveStep(1); // Go back to shipping info step
+      return;
+    }
+    
+    // Check if cart is empty
+    if (cartItems.length === 0) {
+      setError("Your cart is empty. Please add items before checking out.");
+      setActiveStep(0);
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      const result = await cartService.checkout(currentUser.id);
-      setOrderNumber(result.id);
+      console.log('Checkout started with user ID:', currentUser.id);
+      console.log('Cart items:', cartItems);
+      
+      // Format shipping address
+      const formattedAddress = {
+        firstName: shippingInfo.firstName,
+        lastName: shippingInfo.lastName,
+        address: shippingInfo.address,
+        city: shippingInfo.city,
+        postalCode: shippingInfo.postalCode,
+        country: shippingInfo.country
+      };
+
+      const result = await cartService.checkout(currentUser.id, formattedAddress);
+      console.log('Checkout result:', result);
+      
+      // Order will be in result.order if one was created
+      if (result.order) {
+        setOrderNumber(result.order.id);
+      } else {
+        setOrderNumber(result.checkedOutCart.id);
+      }
+      
       setOrderComplete(true);
       refreshCart();
       setActiveStep((prevStep) => prevStep + 1);
@@ -121,6 +156,16 @@ const Checkout = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Helper to validate shipping info
+  const validateShippingInfo = () => {
+    return shippingInfo.firstName && 
+      shippingInfo.lastName && 
+      shippingInfo.address && 
+      shippingInfo.city && 
+      shippingInfo.postalCode && 
+      shippingInfo.country;
   };
 
   // Validate if we can proceed to next step
