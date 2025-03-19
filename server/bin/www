@@ -110,7 +110,7 @@ async function createSampleUsers() {
  */
 const db = require("../models/");
 db.sequelize
-  .sync({force: true})
+  .sync({force: false})
   .then(async () => {
     // Create admin user after database sync
     await createAdminUser();
