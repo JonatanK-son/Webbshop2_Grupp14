@@ -27,9 +27,11 @@ const ratingService = {
   addRating: async (productId, userId, ratingData) => {
     try {
       const response = await api.post(`/ratings/product/${productId}`, {
-        userId,
-        rating: ratingData.rating,
-        comment: ratingData.comment
+        userId: userId,
+        rating: {
+          rating: ratingData.rating,
+          comment: ratingData.comment
+        }
       });
       return response.data;
     } catch (error) {

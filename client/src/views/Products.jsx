@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Box, Typography, Grid, Card, CardContent, CardMedia, CardActionArea, Button, 
-  TextField, InputAdornment, FormControl, InputLabel, Select, MenuItem, Container, Snackbar, Alert } from '@mui/material';
+  TextField, InputAdornment, FormControl, InputLabel, Select, MenuItem, Container, Snackbar, Alert, Rating } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
@@ -79,6 +79,8 @@ function Products() {
     .sort((a, b) => {
       if (sortBy === 'price-low') return a.price - b.price;
       if (sortBy === 'price-high') return b.price - a.price;
+      if (sortBy === 'rating-high') return b.averageRating - a.averageRating;
+      if (sortBy === 'rating-low') return a.averageRating - b.averageRating;
       return a.name.localeCompare(b.name); // Default sort by name
     });
 
@@ -132,6 +134,8 @@ function Products() {
               <MenuItem value="name">Name</MenuItem>
               <MenuItem value="price-low">Price: Low-High</MenuItem>
               <MenuItem value="price-high">Price: High-Low</MenuItem>
+              <MenuItem value="rating-high">Rating: High-Low</MenuItem>
+              <MenuItem value="rating-low">Rating: Low-High</MenuItem>
             </Select>
           </FormControl>
         </Box>
@@ -181,6 +185,17 @@ function Products() {
                     <PriceTypography variant="body2" sx={{ mt: 0.5 }}>
                       ${product.price}
                     </PriceTypography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                      <Rating 
+                        value={product.averageRating || 0} 
+                        precision={0.5} 
+                        size="small" 
+                        readOnly 
+                      />
+                      <Typography variant="caption" sx={{ ml: 0.5 }}>
+                        ({product.averageRating ? product.averageRating.toFixed(1) : '0.0'})
+                      </Typography>
+                    </Box>
                   </CardContent>
                 </CardActionArea>
                 <Box sx={{ p: 1, pt: 0 }}>
