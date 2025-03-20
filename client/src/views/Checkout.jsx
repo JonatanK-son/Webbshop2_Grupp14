@@ -362,7 +362,6 @@ const Checkout = () => {
                   fullWidth
                   label="Country"
                   name="country"
-                  value={shippingInfo.country}
                   onChange={handleCountryChange}
                 />
               </Grid>

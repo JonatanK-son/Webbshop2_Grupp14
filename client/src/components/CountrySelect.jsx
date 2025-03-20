@@ -11,16 +11,10 @@ export default function CountrySelect({ value, onChange }) {
     setError(false);
   };
 
-  const handleBlur = () => {
-    if (!value) {
-      setError(true);
-    }
-  };
   return (
     <Autocomplete
       value={value}
       onChange={handleChange}
-      onBlur={handleBlur}
       id="country-select-demo"
       options={countries}
       autoHighlight
