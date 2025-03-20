@@ -16,8 +16,8 @@ function ProductDetails() {
   };
 
   return (
-    <Box component="main" className="App" sx={{ width: '100%' }}>
-      <Container maxWidth="lg" sx={{ py: 2 }}>
+    <Box component="main" sx={{ width: '100%', bgcolor: '#f5f5f5', py: 3 }}>
+      <Container maxWidth="lg">
         <Description
           onQuant={quant}
           onAdd={addQuant}

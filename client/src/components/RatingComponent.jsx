@@ -91,33 +91,50 @@ const RatingComponent = ({ productId }) => {
   }
 
   return (
-    <Box sx={{ width: '100%', px: 0 }}>
-      {/* Compact Header with Rating Summary */}
+    <Box sx={{ width: '100%' }}>
+      {/* Rating Summary - Two sections side by side */}
       <Box sx={{ 
         display: 'flex',
-        alignItems: 'center', 
         justifyContent: 'space-between',
-        mb: 2,
+        alignItems: 'center',
         flexWrap: 'wrap',
-        gap: 2
+        gap: 1,
+        mb: 2,
+        pb: 2,
+        borderBottom: '1px solid #eee'
       }}>
-        <Stack direction="row" spacing={2} alignItems="center">
-          <Typography variant="h5" component="div" fontWeight="bold" color="primary">
-            {averageRating > 0 ? averageRating.toFixed(1) : '-'}
-          </Typography>
-          <Rating 
-            value={averageRating} 
-            precision={0.5} 
-            readOnly 
-            size="small"
-          />
-          <Chip 
-            label={`${ratings.length} ${ratings.length === 1 ? 'review' : 'reviews'}`} 
-            size="small" 
-            variant="outlined"
-          />
-        </Stack>
+        {/* Left side - Average rating */}
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            mr: 2, 
+            pr: 2, 
+            borderRight: '1px solid #eee' 
+          }}>
+            <Typography variant="h4" component="div" fontWeight="bold" color="primary">
+              {averageRating > 0 ? averageRating.toFixed(1) : '-'}
+            </Typography>
+            <Rating 
+              value={averageRating} 
+              precision={0.5} 
+              readOnly 
+              size="small"
+            />
+          </Box>
+          
+          <Box>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              Based on {ratings.length} {ratings.length === 1 ? 'review' : 'reviews'}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Share your thoughts with other customers
+            </Typography>
+          </Box>
+        </Box>
         
+        {/* Right side - Write review button */}
         <Button 
           variant="contained" 
           onClick={handleOpenDialog}
@@ -130,10 +147,10 @@ const RatingComponent = ({ productId }) => {
 
       {/* Reviews List - More Compact */}
       {ratings.length > 0 ? (
-        <List disablePadding sx={{ width: '100%' }}>
+        <List disablePadding>
           {ratings.map((rating, index) => (
             <React.Fragment key={rating.id}>
-              <ListItem alignItems="flex-start" disableGutters sx={{ px: 0 }}>
+              <ListItem alignItems="flex-start" disableGutters sx={{ px: 0, py: 1 }}>
                 <Stack direction="row" spacing={1.5} width="100%">
                   <Avatar 
                     sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}
@@ -153,15 +170,23 @@ const RatingComponent = ({ productId }) => {
                   </Box>
                 </Stack>
               </ListItem>
-              {index < ratings.length - 1 && <Divider sx={{ my: 1 }} />}
+              {index < ratings.length - 1 && <Divider />}
             </React.Fragment>
           ))}
         </List>
       ) : (
-        <Box sx={{ py: 1, textAlign: 'center' }}>
+        <Box sx={{ py: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: 1, bgcolor: '#f9f9f9', borderRadius: 1 }}>
           <Typography variant="body2" color="text.secondary">
-            No reviews yet. Be the first to review this product!
+            No reviews yet.
           </Typography>
+          <Button 
+            variant="outlined" 
+            size="small" 
+            onClick={handleOpenDialog}
+            startIcon={<StarIcon />}
+          >
+            Be the first to review this product
+          </Button>
         </Box>
       )}
 
