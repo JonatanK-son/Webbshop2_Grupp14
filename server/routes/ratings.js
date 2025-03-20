@@ -47,18 +47,24 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete a rating
-router.delete('/:id', async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
-    await ratingService.deleteRating(req.params.id);
+    const { userId } = req.body; // Extract userId from request body
+    if (!userId) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    await ratingService.deleteRating(req.params.id, userId); // Pass userId
     res.status(204).end();
   } catch (error) {
-    if (error.message === 'Rating not found') {
+    if (error.message === "Rating not found") {
       res.status(404).json({ message: error.message });
     } else {
-      res.status(500).json({ error: error.message });
+      res.status(403).json({ error: error.message }); // Change to 403 for permission errors
     }
   }
 });
+
 
 // Add this new route
 router.get('/product/:productId/average', async (req, res) => {

@@ -52,9 +52,11 @@ const ratingService = {
   },
 
   // Delete a rating
-  deleteRating: async (ratingId) => {
+  deleteRating: async (ratingId, userId) => {
     try {
-      await api.delete(`/ratings/${ratingId}`);
+      await api.delete(`/ratings/${ratingId}`, {
+        data: {userId},
+      });
       return true;
     } catch (error) {
       console.error(`Error deleting rating ${ratingId}:`, error);

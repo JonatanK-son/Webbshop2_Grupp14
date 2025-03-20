@@ -5,45 +5,74 @@ class RatingService {
     try {
       return await ratings.findAll({
         where: { productId },
-        include: [{
-          model: users,
-          as: 'user',
-          attributes: ['username', 'email'] // Only include necessary user fields
-        }],
-        order: [['createdAt', 'DESC']] // Show newest ratings first
+        include: [
+          {
+            model: users,
+            as: "user",
+            attributes: ["username", "email"],
+          },
+        ],
+        order: [["createdAt", "DESC"]],
       });
     } catch (error) {
       console.error(`Error getting ratings for product ${productId}:`, error);
-      return []; // Return empty array if there's an error
+      return [];
     }
   }
 
   async getUserRatings(userId) {
     return await ratings.findAll({
-      where: { userId }
+      where: { userId },
     });
   }
 
   async createRating(ratingData) {
+    if (!ratingData.comment || ratingData.comment.trim() === "") {
+      ratingData.comment = null;
+    }
+    const existingReview = await ratings.findOne({
+      where: {
+        userId: ratingData.userId,
+        productId: ratingData.productId,
+      },
+    });
+    if (existingReview) {
+      throw new Error("You have already submitted a review for this product.");
+    }
     return await ratings.create(ratingData);
   }
 
-  async updateRating(id, ratingData) {
-    const rating = await ratings.findByPk(id);
-    if (!rating) {
-      throw new Error('Rating not found');
+  async updateRating(id, { rating, comment, userId }) {
+    const review = await ratings.findByPk(id);
+
+    if (!review) {
+      throw new Error("Rating not found");
     }
-    
-    return await rating.update(ratingData);
+
+    if (review.userId !== userId) {
+      throw new Error("You do not have permission to edit this review");
+    }
+
+    review.rating = rating;
+    review.comment = comment && comment.trim() !== "" ? comment : null;
+    review.updatedAt = new Date();
+
+    await review.save();
+    return review;
   }
 
-  async deleteRating(id) {
-    const rating = await ratings.findByPk(id);
-    if (!rating) {
-      throw new Error('Rating not found');
+  async deleteRating(id, userId) {
+    const review = await ratings.findByPk(id);
+
+    if (!review) {
+      throw new Error("Rating not found");
     }
-    
-    await rating.destroy();
+
+    if (review.userId !== userId && userId !== 1) {
+      throw new Error("You do not have permission to delete this review.");
+    }
+
+    await review.destroy();
     return true;
   }
 }
