@@ -6,17 +6,19 @@ import {
   Button, 
   TextField, 
   List, 
-  ListItem, 
-  ListItemText,
+  ListItem,
   Divider,
-  Paper,
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
+  DialogActions,
+  Stack,
+  Avatar,
+  Chip
 } from '@mui/material';
 import { ratingService } from '../services';
 import { useUser } from '../context/UserContext';
+import StarIcon from '@mui/icons-material/Star';
 
 const RatingComponent = ({ productId }) => {
   const [ratings, setRatings] = useState([]);
@@ -85,42 +87,89 @@ const RatingComponent = ({ productId }) => {
   };
 
   if (loading) {
-    return <Typography>Loading ratings...</Typography>;
+    return <Typography variant="body2">Loading ratings...</Typography>;
   }
 
   return (
-    <Paper sx={{ p: 3, maxWidth: 800, margin: "auto" }}>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Product Ratings
-        </Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+    <Box sx={{ width: '100%', px: 0 }}>
+      {/* Compact Header with Rating Summary */}
+      <Box sx={{ 
+        display: 'flex',
+        alignItems: 'center', 
+        justifyContent: 'space-between',
+        mb: 2,
+        flexWrap: 'wrap',
+        gap: 2
+      }}>
+        <Stack direction="row" spacing={2} alignItems="center">
+          <Typography variant="h5" component="div" fontWeight="bold" color="primary">
+            {averageRating > 0 ? averageRating.toFixed(1) : '-'}
+          </Typography>
           <Rating 
             value={averageRating} 
             precision={0.5} 
             readOnly 
-            size="large"
+            size="small"
           />
-          <Typography variant="h6" sx={{ ml: 1 }}>
-            {averageRating.toFixed(1)}
-          </Typography>
-          <Typography variant="body2" sx={{ ml: 1, color: 'text.secondary' }}>
-            ({ratings.length} {ratings.length === 1 ? 'review' : 'reviews'})
-          </Typography>
-        </Box>
+          <Chip 
+            label={`${ratings.length} ${ratings.length === 1 ? 'review' : 'reviews'}`} 
+            size="small" 
+            variant="outlined"
+          />
+        </Stack>
+        
         <Button 
           variant="contained" 
           onClick={handleOpenDialog}
-          sx={{ mt: 1 }}
+          startIcon={<StarIcon />}
+          size="small"
         >
           Write a Review
         </Button>
       </Box>
 
+      {/* Reviews List - More Compact */}
+      {ratings.length > 0 ? (
+        <List disablePadding sx={{ width: '100%' }}>
+          {ratings.map((rating, index) => (
+            <React.Fragment key={rating.id}>
+              <ListItem alignItems="flex-start" disableGutters sx={{ px: 0 }}>
+                <Stack direction="row" spacing={1.5} width="100%">
+                  <Avatar 
+                    sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}
+                  >
+                    {(rating.user?.username?.[0] || 'A').toUpperCase()}
+                  </Avatar>
+                  <Box flex={1}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                      <Typography variant="subtitle2" mr={1} fontSize="0.85rem">
+                        {rating.user ? rating.user.username : 'Anonymous'}
+                      </Typography>
+                      <Rating value={rating.rating} readOnly size="small" />
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" fontSize="0.8rem">
+                      {rating.comment || 'No comment provided'}
+                    </Typography>
+                  </Box>
+                </Stack>
+              </ListItem>
+              {index < ratings.length - 1 && <Divider sx={{ my: 1 }} />}
+            </React.Fragment>
+          ))}
+        </List>
+      ) : (
+        <Box sx={{ py: 1, textAlign: 'center' }}>
+          <Typography variant="body2" color="text.secondary">
+            No reviews yet. Be the first to review this product!
+          </Typography>
+        </Box>
+      )}
+
+      {/* Review Dialog */}
       <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
         <DialogTitle>Write a Review</DialogTitle>
         <DialogContent>
-          <Box sx={{ py: 2 }}>
+          <Box sx={{ py: 1 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <Rating
                 value={userRating}
@@ -152,43 +201,7 @@ const RatingComponent = ({ productId }) => {
           </Button>
         </DialogActions>
       </Dialog>
-
-      <List>
-        {ratings.map((rating, index) => (
-          <React.Fragment key={rating.id}>
-            <ListItem alignItems="flex-start">
-              <ListItemText
-                primary={
-                  <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                    <Rating value={rating.rating} readOnly size="small" />
-                    <Typography variant="body2" sx={{ ml: 1, color: 'text.secondary' }}>
-                      by {rating.user ? rating.user.username : 'Anonymous'}
-                    </Typography>
-                  </Box>
-                }
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      {rating.comment || 'No comment provided'}
-                    </Typography>
-                  </React.Fragment>
-                }
-              />
-            </ListItem>
-            {index < ratings.length - 1 && <Divider />}
-          </React.Fragment>
-        ))}
-        {ratings.length === 0 && (
-          <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 2 }}>
-            No reviews yet. Be the first to review this product!
-          </Typography>
-        )}
-      </List>
-    </Paper>
+    </Box>
   );
 };
 
