@@ -1,56 +1,27 @@
-import { Box, Typography, Button, Grid, Card, CardMedia, CardContent, CardActions, Rating, Container } from '@mui/material';
+import { Box, Typography, Button, Grid, Card, CardMedia, CardContent, Rating, Container, CardActionArea, Paper } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { productService } from '../services';
 import { useCart } from '../context/CartContext';
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
+import SupportAgentOutlinedIcon from '@mui/icons-material/SupportAgentOutlined';
+import VerifiedOutlinedIcon from '@mui/icons-material/VerifiedOutlined';
+import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
 
-// Hero section with color background - reduced height
-const HeroSection = styled(Box)(({ theme }) => ({
-  height: '50vh', // Reduced from 100vh to make it more compact
+// Styled components for consistent design
+const Section = styled(Box)(({ theme, background }) => ({
   width: '100%',
-  backgroundColor: '#2d2d2d',
+  background: background || 'transparent',
+  padding: theme.spacing(3, 0),
   display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  padding: 0,
-  position: 'relative',
-  marginBottom: 0,
-}));
-
-const HeroContent = styled(Box)(({ theme }) => ({
-  zIndex: 1,
-  maxWidth: '800px',
-  padding: theme.spacing(2), // Reduced padding
-  textAlign: 'center',
-  [theme.breakpoints.down('md')]: {
-    padding: theme.spacing(2),
-  },
+  flexDirection: 'column',
+  alignItems: 'stretch',
   [theme.breakpoints.down('sm')]: {
-    padding: theme.spacing(1),
+    padding: theme.spacing(2, 0),
   },
 }));
 
-const PromoBanner = styled(Box)(({ theme }) => ({
-  backgroundColor: '#000',
-  color: '#fff',
-  padding: theme.spacing(1),
-  textAlign: 'center',
-  width: '100%',
-}));
-
-const FeaturedSection = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(4, 2), // Reduced padding
-  backgroundColor: '#f5f5f5',
-  [theme.breakpoints.down('md')]: {
-    padding: theme.spacing(3, 2),
-  },
-  [theme.breakpoints.down('sm')]: {
-    padding: theme.spacing(2, 1),
-  },
-}));
-
-// Updated ProductCard with compact styling and no hover effects
 const ProductCard = styled(Card)(({ theme }) => ({
   height: '100%',
   display: 'flex',
@@ -60,7 +31,6 @@ const ProductCard = styled(Card)(({ theme }) => ({
   boxShadow: 'none',
 }));
 
-// Create a styled component for consistent image containers
 const ImageContainer = styled(Box)(({ theme }) => ({
   position: 'relative',
   paddingTop: '100%', // 1:1 Aspect ratio (square)
@@ -68,14 +38,13 @@ const ImageContainer = styled(Box)(({ theme }) => ({
   overflow: 'hidden',
 }));
 
-// Updated CardMedia styling to maintain aspect ratio
 const StyledCardMedia = styled(CardMedia)(({ theme }) => ({
   position: 'absolute',
   top: 0,
   left: 0,
   width: '100%',
   height: '100%',
-  objectFit: 'cover', // This ensures the image covers the area without distortion
+  objectFit: 'cover',
 }));
 
 function Home() {
@@ -90,11 +59,8 @@ function Home() {
       try {
         setLoading(true);
         const products = await productService.getAllProducts();
-
-        // Sort by rating (high to low) before selecting featured products
         const sortedProducts = products.sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0));
-  
-        setFeaturedProducts(sortedProducts.slice(0, 4)); // Get top 4 rated products
+        setFeaturedProducts(sortedProducts.slice(0, 4));
         setError(null);
       } catch (err) {
         console.error('Error fetching products:', err);
@@ -136,132 +102,252 @@ function Home() {
     };
 
     fetchProducts();
-  }, [productService]);
+  }, []);
 
   const handleAddToCart = (product) => {
     addToCart(product);
   };
 
   return (
-    <Box sx={{ width: '100%', margin: 0, padding: 0 }}>
+    <Box sx={{ 
+      width: '100%', 
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column',
+      minHeight: '100vh'
+    }}>
       {/* Promo Banner */}
-      <PromoBanner>
-        <Typography variant="body2">
-          FREE SHIPPING ON ALL ORDERS OVER $50
-        </Typography>
-      </PromoBanner>
-
-      {/* Hero Section - more compact */}
-      <HeroSection>
-        <HeroContent>
-          <Typography 
-            variant="h3" 
-            component="h1" 
-            sx={{ 
-              color: '#fff', 
-              fontWeight: 300, 
-              mb: 1,
-              fontSize: { xs: '2rem', md: '2.75rem' }
-            }}
-          >
-            Quality Products for Everyone
+      <Section background="#000" sx={{ py: 1 }}>
+        <Container maxWidth="xl" sx={{ width: '100%' }}>
+          <Typography variant="body2" align="center" sx={{ color: '#fff' }}>
+            FREE SHIPPING ON ALL ORDERS OVER $50
           </Typography>
+        </Container>
+      </Section>
+
+      {/* Hero Section */}
+      <Section 
+        background="#2d2d2d" 
+        sx={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          justifyContent: 'center',
+          py: 0,
+          height: { xs: '40vh', sm: '50vh' },
+          flex: '0 0 auto'
+        }}
+      >
+        <Container maxWidth="xl" sx={{ 
+          textAlign: 'center', 
+          py: { xs: 4, sm: 6 },
+          display: 'flex',
+          justifyContent: 'center',
+          width: '100%'
+        }}>
+          <Box sx={{ maxWidth: 800, mx: 'auto', px: 2 }}>
+            <Typography 
+              variant="h3" 
+              component="h1" 
+              sx={{ 
+                color: '#fff', 
+                fontWeight: 300, 
+                mb: 1,
+                fontSize: { xs: '2rem', md: '2.75rem' }
+              }}
+            >
+              Quality Products for Everyone
+            </Typography>
+            <Typography 
+              variant="body1" 
+              sx={{ 
+                color: '#fff', 
+                mb: 2,
+                fontSize: { xs: '0.9rem', md: '1.1rem' }
+              }}
+            >
+              Discover our wide selection of products at competitive prices.
+            </Typography>
+            <Button 
+              variant="contained" 
+              size="medium"
+              onClick={() => navigate('/products')}
+              sx={{ 
+                backgroundColor: '#fff',
+                color: '#000',
+                borderRadius: 0,
+                padding: '8px 20px',
+                '&:hover': {
+                  backgroundColor: '#f0f0f0',
+                }
+              }}
+            >
+              SHOP NOW
+            </Button>
+          </Box>
+        </Container>
+      </Section>
+
+      {/* Featured Products Section */}
+      <Section sx={{ flex: '1 0 auto', display: 'flex' }}>
+        <Container maxWidth="xl" sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
           <Typography 
-            variant="body1" 
-            sx={{ 
-              color: '#fff', 
-              mb: 2,
-              fontSize: { xs: '0.9rem', md: '1.1rem' }
-            }}
+            variant="h6" 
+            sx={{ fontWeight: 'medium', color: '#333', mb: 2 }}
           >
-            Discover our wide selection of products at competitive prices.
+            Featured Products
           </Typography>
-          <Button 
-            variant="contained" 
-            size="medium"
-            onClick={() => navigate('/products')}
-            sx={{ 
-              backgroundColor: '#fff',
-              color: '#000',
-              borderRadius: 0,
-              padding: '8px 20px',
-              '&:hover': {
-                backgroundColor: '#f0f0f0',
-              }
-            }}
+
+          {loading ? (
+            <Typography align="center">Loading products...</Typography>
+          ) : error ? (
+            <Typography align="center" color="error">{error}</Typography>
+          ) : (
+            <Grid container spacing={1}>
+              {featuredProducts.map((product) => (
+                <Grid item key={product.id} xs={6} sm={4} md={3} lg={2}>
+                  <ProductCard elevation={0}>
+                    <CardActionArea onClick={() => navigate(`/products/${product.id}`)}>
+                      <ImageContainer>
+                        <StyledCardMedia
+                          component="img"
+                          image={product.image || 'https://via.placeholder.com/300x300'}
+                          alt={product.name}
+                        />
+                      </ImageContainer>
+                      <CardContent sx={{ p: 1, pb: 1, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                        <Typography variant="body2" component="div" noWrap sx={{ fontWeight: 'medium', mb: 0.5 }}>
+                          {product.name}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {product.category || 'General'}
+                        </Typography>
+                        <Typography variant="body2" color="primary" sx={{ mt: 0.5, fontWeight: 'bold' }}>
+                          ${product.price}
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                          <Rating 
+                            value={product.averageRating || 0} 
+                            precision={0.5} 
+                            size="small" 
+                            readOnly 
+                          />
+                          <Typography variant="caption" sx={{ ml: 0.5 }}>
+                            ({product.averageRating ? product.averageRating.toFixed(1) : '0.0'})
+                          </Typography>
+                        </Box>
+                      </CardContent>
+                    </CardActionArea>
+                  </ProductCard>
+                </Grid>
+              ))}
+            </Grid>
+          )}
+        </Container>
+      </Section>
+      
+      {/* Why Choose Us Section */}
+      <Section 
+        background="#f9f9f9" 
+        sx={{ 
+          flex: '1 0 auto',
+          display: 'flex',
+          pb: 4
+        }}
+      >
+        <Container maxWidth="xl" sx={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+          <Typography 
+            variant="h6" 
+            sx={{ fontWeight: 'medium', color: '#333', mb: 2 }}
           >
-            SHOP NOW
-          </Button>
-        </HeroContent>
-      </HeroSection>
-
-      {/* Featured Products Section - made to match Products page */}
-      <Container maxWidth="xl" sx={{ mt: 2, mb: 3 }}> {/* Added Container to match navbar width */}
-        <Typography 
-          variant="h6" 
-          sx={{ fontWeight: 'medium', color: '#333', mb: 2 }}
-        >
-          Featured Products
-        </Typography>
-
-        {loading ? (
-          <Typography align="center">Loading products...</Typography>
-        ) : error ? (
-          <Typography align="center" color="error">{error}</Typography>
-        ) : (
-          <Grid container spacing={1}>
-            {featuredProducts.map((product) => (
-              <Grid item key={product.id} xs={6} sm={4} md={3} lg={2}> {/* Updated grid sizing to match Products page */}
-                <ProductCard elevation={0}>
-                  <ImageContainer>
-                    <StyledCardMedia
-                      component="img"
-                      image={product.image || 'https://via.placeholder.com/300x300'}
-                      alt={product.name}
-                    />
-                  </ImageContainer>
-                  <CardContent sx={{ p: 1, pb: 1, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" component="div" noWrap sx={{ fontWeight: 'medium', mb: 0.5 }}>
-                      {product.name}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {product.category || 'General'}
-                    </Typography>
-                    <Typography variant="body2" color="primary" sx={{ mt: 0.5, fontWeight: 'bold' }}>
-                      ${product.price}
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                      <Rating 
-                        value={product.averageRating || 0} 
-                        precision={0.5} 
-                        size="small" 
-                        readOnly 
-                      />
-                      <Typography variant="caption" sx={{ ml: 0.5 }}>
-                        ({product.averageRating ? product.averageRating.toFixed(1) : '0.0'})
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                </ProductCard>
-              </Grid>
-            ))}
+            Why Choose Us
+          </Typography>
+          
+          <Grid container spacing={2} sx={{ width: '100%', mb: 2 }}>
+            <Grid item xs={12} sm={6} md={3}>
+              <Paper elevation={0} sx={{ 
+                p: 2, 
+                height: '100%', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                border: '1px solid #f0f0f0', 
+                backgroundColor: '#fff'
+              }}>
+                <LocalShippingOutlinedIcon sx={{ fontSize: 36, color: 'primary.main', mb: 1 }} />
+                <Typography variant="body1" component="h3" gutterBottom align="center" sx={{ fontWeight: 'medium' }}>
+                  Fast Shipping
+                </Typography>
+                <Typography variant="body2" color="text.secondary" align="center">
+                  Quick delivery to your doorstep with reliable shipping options
+                </Typography>
+              </Paper>
+            </Grid>
+            
+            <Grid item xs={12} sm={6} md={3}>
+              <Paper elevation={0} sx={{ 
+                p: 2, 
+                height: '100%', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                border: '1px solid #f0f0f0', 
+                backgroundColor: '#fff'
+              }}>
+                <VerifiedOutlinedIcon sx={{ fontSize: 36, color: 'primary.main', mb: 1 }} />
+                <Typography variant="body1" component="h3" gutterBottom align="center" sx={{ fontWeight: 'medium' }}>
+                  Quality Products
+                </Typography>
+                <Typography variant="body2" color="text.secondary" align="center">
+                  Carefully selected products that meet our high quality standards
+                </Typography>
+              </Paper>
+            </Grid>
+            
+            <Grid item xs={12} sm={6} md={3}>
+              <Paper elevation={0} sx={{ 
+                p: 2, 
+                height: '100%', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                border: '1px solid #f0f0f0', 
+                backgroundColor: '#fff'
+              }}>
+                <SupportAgentOutlinedIcon sx={{ fontSize: 36, color: 'primary.main', mb: 1 }} />
+                <Typography variant="body1" component="h3" gutterBottom align="center" sx={{ fontWeight: 'medium' }}>
+                  Customer Support
+                </Typography>
+                <Typography variant="body2" color="text.secondary" align="center">
+                  Dedicated team ready to assist you with any questions or issues
+                </Typography>
+              </Paper>
+            </Grid>
+            
+            <Grid item xs={12} sm={6} md={3}>
+              <Paper elevation={0} sx={{ 
+                p: 2, 
+                height: '100%', 
+                display: 'flex', 
+                flexDirection: 'column', 
+                alignItems: 'center', 
+                border: '1px solid #f0f0f0', 
+                backgroundColor: '#fff'
+              }}>
+                <PaymentsOutlinedIcon sx={{ fontSize: 36, color: 'primary.main', mb: 1 }} />
+                <Typography variant="body1" component="h3" gutterBottom align="center" sx={{ fontWeight: 'medium' }}>
+                  Secure Payment
+                </Typography>
+                <Typography variant="body2" color="text.secondary" align="center">
+                  Multiple secure payment options to ensure your transactions are safe
+                </Typography>
+              </Paper>
+            </Grid>
           </Grid>
-        )}
-
-        <Box sx={{ textAlign: 'right', mt: 2 }}> {/* Changed alignment to right to match Products page style */}
-          <Button 
-            variant="outlined" 
-            size="small"
-            onClick={() => navigate('/products')}
-            sx={{ 
-              borderRadius: 0,
-              padding: '6px 16px',
-            }}
-          >
-            View All Products
-          </Button>
-        </Box>
-      </Container>
+        </Container>
+      </Section>
+      
+      {/* Footer spacing */}
+      <Box sx={{ height: 40, backgroundColor: '#f9f9f9' }} />
     </Box>
   );
 }
