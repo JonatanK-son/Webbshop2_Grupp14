@@ -75,7 +75,7 @@ export const CartProvider = ({ children }) => {
 
   // Calculate cart totals
   const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const shipping = subtotal >= 50 ? 0 : 10;
+  const shipping = subtotal === 0 || subtotal >= 50 ? 0 : 10;
   const total = subtotal + shipping;
   const cartItemCount = cartItems.reduce((count, item) => count + item.quantity, 0);
 
