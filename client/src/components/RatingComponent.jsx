@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Typography,
@@ -9,14 +9,17 @@ import {
   ListItem,
   ListItemText,
   Divider,
-  Paper,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
-} from "@mui/material";
-import { ratingService } from "../services";
-import { useUser } from "../context/UserContext";
+  Stack,
+  Avatar,
+  Chip
+} from '@mui/material';
+import { ratingService } from '../services';
+import { useUser } from '../context/UserContext';
+import StarIcon from '@mui/icons-material/Star';
 
 const RatingComponent = ({ productId }) => {
   const [ratings, setRatings] = useState([]);
@@ -129,39 +132,144 @@ const RatingComponent = ({ productId }) => {
   };
 
   if (loading) {
-    return <Typography>Loading ratings...</Typography>;
+    return <Typography variant="body2">Loading ratings...</Typography>;
   }
 
   return (
-    <Paper sx={{ p: 3, maxWidth: 800, margin: "auto" }}>
-      <Box sx={{ mb: 3 }}>
-        <Typography variant="h6" gutterBottom>
-          Product Ratings
-        </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
-          <Rating value={averageRating} precision={0.5} readOnly size="large" />
-          <Typography variant="h6" sx={{ ml: 1 }}>
-            {averageRating.toFixed(1)}
-          </Typography>
-          <Typography variant="body2" sx={{ ml: 1, color: "text.secondary" }}>
-            ({ratings.length} {ratings.length === 1 ? "review" : "reviews"})
-          </Typography>
+    <Box sx={{ width: '100%' }}>
+      {/* Rating Summary - Two sections side by side */}
+      <Box sx={{ 
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: 1,
+        mb: 2,
+        pb: 2,
+        borderBottom: '1px solid #eee'
+      }}>
+        {/* Left side - Average rating */}
+        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+          <Box sx={{ 
+            display: 'flex', 
+            flexDirection: 'column', 
+            alignItems: 'center', 
+            mr: 2, 
+            pr: 2, 
+            borderRight: '1px solid #eee' 
+          }}>
+            <Typography variant="h4" component="div" fontWeight="bold" color="primary">
+              {averageRating > 0 ? averageRating.toFixed(1) : '-'}
+            </Typography>
+            <Rating 
+              value={averageRating} 
+              precision={0.5} 
+              readOnly 
+              size="small"
+            />
+          </Box>
+          
+          <Box>
+            <Typography variant="body2" color="text.secondary" gutterBottom>
+              Based on {ratings.length} {ratings.length === 1 ? 'review' : 'reviews'}
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              Share your thoughts with other customers
+            </Typography>
+          </Box>
         </Box>
-        <Button variant="contained" onClick={handleOpenDialog} sx={{ mt: 1 }}>
+        
+        {/* Right side - Write review button */}
+        <Button 
+          variant="contained" 
+          onClick={handleOpenDialog}
+          startIcon={<StarIcon />}
+          size="small"
+        >
           Write a Review
         </Button>
       </Box>
 
-      <Dialog
-        open={openDialog}
-        onClose={handleCloseDialog}
-        maxWidth="sm"
-        fullWidth
-      >
+      {/* Reviews List - More Compact */}
+      {ratings.length > 0 ? (
+        <List disablePadding>
+          {ratings.map((rating, index) => (
+            <React.Fragment key={rating.id}>
+              <ListItem alignItems="flex-start" disableGutters sx={{ px: 0, py: 1 }}>
+                <Stack direction="row" spacing={1.5} width="100%">
+                  <Avatar 
+                    sx={{ width: 32, height: 32, bgcolor: 'primary.main' }}
+                  >
+                    {(rating.user?.username?.[0] || 'A').toUpperCase()}
+                  </Avatar>
+                  <Box flex={1}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.5 }}>
+                      <Typography variant="subtitle2" mr={1} fontSize="0.85rem">
+                        {rating.user ? rating.user.username : 'Anonymous'}
+                      </Typography>
+                      <Rating value={rating.rating} readOnly size="small" />
+                      {rating.updatedAt !== rating.createdAt && (
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{ ml: 1 }}
+                        >
+                          (Edited)
+                        </Typography>
+                      )}
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" fontSize="0.8rem">
+                      {rating.comment || 'No comment provided'}
+                    </Typography>
+                    
+                    {/* Edit and Delete buttons from HEAD */}
+                    <Box sx={{ display: 'flex', gap: 1, mt: 0.5 }}>
+                      {currentUser?.id === rating.userId && (
+                        <Button size="small" onClick={() => handleEdit(rating)} sx={{ minWidth: 0, py: 0 }}>
+                          Edit
+                        </Button>
+                      )}
+                      {(currentUser?.id === rating.userId ||
+                        currentUser?.role === "admin") && (
+                        <Button
+                          size="small"
+                          color="error"
+                          onClick={() => handleDelete(rating)}
+                          sx={{ minWidth: 0, py: 0 }}
+                        >
+                          Delete
+                        </Button>
+                      )}
+                    </Box>
+                  </Box>
+                </Stack>
+              </ListItem>
+              {index < ratings.length - 1 && <Divider />}
+            </React.Fragment>
+          ))}
+        </List>
+      ) : (
+        <Box sx={{ py: 3, display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column', gap: 1, bgcolor: '#f9f9f9', borderRadius: 1 }}>
+          <Typography variant="body2" color="text.secondary">
+            No reviews yet.
+          </Typography>
+          <Button 
+            variant="outlined" 
+            size="small" 
+            onClick={handleOpenDialog}
+            startIcon={<StarIcon />}
+          >
+            Be the first to review this product
+          </Button>
+        </Box>
+      )}
+
+      {/* Review Dialog */}
+      <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
         <DialogTitle>Write a Review</DialogTitle>
         <DialogContent>
-          <Box sx={{ py: 2 }}>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+          <Box sx={{ py: 1 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <Rating
                 value={userRating}
                 onChange={(event, newValue) => setUserRating(newValue)}
@@ -193,81 +301,12 @@ const RatingComponent = ({ productId }) => {
         </DialogActions>
       </Dialog>
 
-      <List>
-        {ratings.map((rating, index) => (
-          <React.Fragment key={rating.id}>
-            <ListItem alignItems="flex-start">
-              <ListItemText
-                primary={
-                  <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
-                    <Rating value={rating.rating} readOnly size="small" />
-                    <Typography
-                      variant="body2"
-                      sx={{ ml: 1, color: "text.secondary" }}
-                    >
-                      by {rating.user ? rating.user.username : "Anonymous"}
-                    </Typography>
-                  </Box>
-                }
-                secondary={
-                  <React.Fragment>
-                    <Typography
-                      component="span"
-                      variant="body2"
-                      color="text.primary"
-                    >
-                      {rating.comment ? rating.comment : ""}
-                    </Typography>
-                    {rating.updatedAt !== rating.createdAt && (
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ ml: 1 }}
-                      >
-                        (Edited)
-                      </Typography>
-                    )}
-                  </React.Fragment>
-                }
-              />
-              {currentUser?.id === rating.userId && (
-                <Box sx={{ ml: 2 }}>
-                  <Button size="small" onClick={() => handleEdit(rating)}>
-                    Edit
-                  </Button>
-                </Box>
-              )}
-              {(currentUser?.id === rating.userId ||
-                currentUser?.role === "admin") && (
-                <Box sx={{ ml: 2 }}>
-                  <Button
-                    size="small"
-                    color="error"
-                    onClick={() => handleDelete(rating)}
-                  >
-                    Delete
-                  </Button>
-                </Box>
-              )}
-            </ListItem>
-            {index < ratings.length - 1 && <Divider />}
-          </React.Fragment>
-        ))}
-        {ratings.length === 0 && (
-          <Typography
-            variant="body2"
-            color="text.secondary"
-            sx={{ textAlign: "center", py: 2 }}
-          >
-            No reviews yet. Be the first to review this product!
-          </Typography>
-        )}
-      </List>
+      {/* Edit Review Dialog */}
       <Dialog open={editDialogOpen} onClose={() => setEditDialogOpen(false)}>
         <DialogTitle>Edit Review</DialogTitle>
         <DialogContent>
           <Box sx={{ py: 2 }}>
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
               <Rating
                 value={editingRating?.rating || 0}
                 onChange={(event, newValue) =>
@@ -293,7 +332,7 @@ const RatingComponent = ({ productId }) => {
           </Button>
         </DialogActions>
       </Dialog>
-    </Paper>
+    </Box>
   );
 };
 
