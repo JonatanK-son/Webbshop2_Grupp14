@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { 
   Box, Typography, IconButton, Stack, Divider, Grid, Tabs, Tab, 
-  Table, TableBody, TableRow, TableCell, Chip, Paper
+  Chip, Paper
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -91,14 +91,6 @@ const Description = () => {
   const handleAdd = () => setQuantity((prev) => prev + 1);
   const handleRemove = () => setQuantity((prev) => Math.max(1, prev - 1));
   const handleTabChange = (event, newValue) => setTabValue(newValue);
-
-  // Mock specifications data (replace with actual data as needed)
-  const specifications = [
-    { name: "Material", value: "High quality material" },
-    { name: "Dimensions", value: "Varies by size" },
-    { name: "Weight", value: "Lightweight" },
-    { name: "Care", value: "Follow product instructions" }
-  ];
 
   return (
     <Box sx={{ width: '100%' }}>
@@ -209,53 +201,25 @@ const Description = () => {
       </Paper>
 
       {/* Product details tabs */}
-      <Paper sx={{ width: '100%' }} elevation={0} variant="outlined">
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+      <Paper sx={{ width: '100%', bgcolor: '#f5f5f5' }} elevation={0} variant="outlined">
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', bgcolor: 'white' }}>
           <StyledTabs 
             value={tabValue} 
             onChange={handleTabChange} 
             aria-label="product information tabs"
-            variant="scrollable"
-            scrollButtons="auto"
+            variant="fullWidth"
           >
-            <StyledTab label="Description" id="product-tab-0" />
-            <StyledTab label="Specifications" id="product-tab-1" />
-            <StyledTab label="Reviews" id="product-tab-2" />
-            <StyledTab label="Shipping & Returns" id="product-tab-3" />
+            <StyledTab label="Reviews" id="product-tab-0" />
+            <StyledTab label="Shipping & Returns" id="product-tab-1" />
           </StyledTabs>
         </Box>
         
-        <Box sx={{ p: 2 }}>
+        <Box sx={{ p: 2, bgcolor: 'white' }}>
           <TabPanel value={tabValue} index={0}>
-            <Typography variant="body2" paragraph>
-              {product.description}
-              <br/><br/>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-            </Typography>
-          </TabPanel>
-          
-          <TabPanel value={tabValue} index={1}>
-            <Table size="small">
-              <TableBody>
-                {specifications.map((spec, index) => (
-                  <TableRow key={index}>
-                    <TableCell component="th" scope="row" sx={{ width: '30%', borderBottom: '1px solid rgba(224, 224, 224, 0.5)', py: 1 }}>
-                      <Typography variant="body2" fontWeight="medium">{spec.name}</Typography>
-                    </TableCell>
-                    <TableCell sx={{ borderBottom: '1px solid rgba(224, 224, 224, 0.5)', py: 1 }}>
-                      <Typography variant="body2">{spec.value}</Typography>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TabPanel>
-          
-          <TabPanel value={tabValue} index={2}>
             <RatingComponent productId={id || product.id} />
           </TabPanel>
           
-          <TabPanel value={tabValue} index={3}>
+          <TabPanel value={tabValue} index={1}>
             <Typography variant="body2" paragraph>
               <strong>Shipping Information</strong><br/>
               We offer free standard shipping on all orders. Delivery typically takes 3-5 business days.

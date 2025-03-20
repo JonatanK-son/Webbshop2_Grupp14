@@ -16,7 +16,7 @@ function ProductDetails() {
   };
 
   return (
-    <Box component="main" sx={{ width: '100%', bgcolor: '#f5f5f5', py: 3 }}>
+    <Box component="main" sx={{ width: '100%', bgcolor: '#f5f5f5', py: 3, minHeight: '100vh' }}>
       <Container maxWidth="lg">
         <Description
           onQuant={quant}
