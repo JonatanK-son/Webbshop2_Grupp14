@@ -1,22 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Box, 
-  Typography, 
-  Rating, 
-  Button, 
-  TextField, 
-  List, 
-  ListItem, 
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Typography,
+  Rating,
+  Button,
+  TextField,
+  List,
+  ListItem,
   ListItemText,
   Divider,
   Paper,
   Dialog,
   DialogTitle,
   DialogContent,
-  DialogActions
-} from '@mui/material';
-import { ratingService } from '../services';
-import { useUser } from '../context/UserContext';
+  DialogActions,
+} from "@mui/material";
+import { ratingService } from "../services";
+import { useUser } from "../context/UserContext";
 
 const RatingComponent = ({ productId }) => {
   const [ratings, setRatings] = useState([]);
@@ -76,21 +76,18 @@ const RatingComponent = ({ productId }) => {
   };
 
   // 5. Implement the handleDelete function
-  const handleDelete = async ( rating ) => {
-    if (window.confirm("Are you sure you want to delete this review?")) {
-      try {
-        console.log("Deleting review:", rating.id, "User ID:", currentUser.id); // Debugging log
+  const handleDelete = async (rating) => {
+    try {
+      console.log("Deleting review:", rating.id, "User ID:", currentUser.id); // Debugging log
 
-        await ratingService.deleteRating(rating.id, currentUser.id);
+      await ratingService.deleteRating(rating.id, currentUser.id);
 
-        await loadRatings();
-      } catch (error) {
-        console.error("Error deleting review:", error);
-        alert(error.response?.data?.error || "Failed to delete review.");
-      }
+      await loadRatings();
+    } catch (error) {
+      console.error("Error deleting review:", error);
+      alert(error.response?.data?.error || "Failed to delete review.");
     }
   };
-
 
   const handleSubmitRating = async () => {
     if (!userRating) {
@@ -233,7 +230,7 @@ const RatingComponent = ({ productId }) => {
                   </React.Fragment>
                 }
               />
-              {(currentUser?.id === rating.userId || currentUser?.isAdmin) && (
+              {(currentUser?.id === rating.userId || currentUser?.role === "admin") && (
                 <Box sx={{ ml: 2 }}>
                   <Button size="small" onClick={() => handleEdit(rating)}>
                     Edit
@@ -295,4 +292,4 @@ const RatingComponent = ({ productId }) => {
   );
 };
 
-export default RatingComponent; 
+export default RatingComponent;

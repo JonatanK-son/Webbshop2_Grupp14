@@ -9,14 +9,14 @@ class RatingService {
           {
             model: users,
             as: "user",
-            attributes: ["username", "email"], // Only include necessary user fields
+            attributes: ["username", "email"],
           },
         ],
-        order: [["createdAt", "DESC"]], // Show newest ratings first
+        order: [["createdAt", "DESC"]],
       });
     } catch (error) {
       console.error(`Error getting ratings for product ${productId}:`, error);
-      return []; // Return empty array if there's an error
+      return [];
     }
   }
 
@@ -27,29 +27,35 @@ class RatingService {
   }
 
   async createRating(ratingData) {
-    // Ensure empty comments are stored as null
     if (!ratingData.comment || ratingData.comment.trim() === "") {
       ratingData.comment = null;
+    }
+    const existingReview = await ratings.findOne({
+      where: {
+        userId: ratingData.userId,
+        productId: ratingData.productId,
+      },
+    });
+    if (existingReview) {
+      throw new Error("You have already submitted a review for this product.");
     }
     return await ratings.create(ratingData);
   }
 
-  async updateRating(id, { rating, comment, userId, isAdmin }) {
+  async updateRating(id, { rating, comment, userId }) {
     const review = await ratings.findByPk(id);
 
     if (!review) {
       throw new Error("Rating not found");
     }
 
-    // Check permission: Only the owner or an admin can edit
-    if (review.userId !== userId && !isAdmin) {
+    if (review.userId !== userId && userId !== 1) {
       throw new Error("You do not have permission to edit this review");
     }
 
-    // Prevent "No comment provided" by storing empty comments as null
     review.rating = rating;
     review.comment = comment && comment.trim() !== "" ? comment : null;
-    review.updatedAt = new Date(); // Mark as edited
+    review.updatedAt = new Date();
 
     await review.save();
     return review;
@@ -62,7 +68,6 @@ class RatingService {
       throw new Error("Rating not found");
     }
 
-    // ✅ Allow admins (userId = 1) to delete any review
     if (review.userId !== userId && userId !== 1) {
       throw new Error("You do not have permission to delete this review.");
     }
