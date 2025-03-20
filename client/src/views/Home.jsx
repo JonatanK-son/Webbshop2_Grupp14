@@ -85,23 +85,23 @@ const StyledCardMedia = styled(CardMedia)(({ theme }) => ({
 }));
 
 const FeaturesSection = styled(Box)(({ theme }) => ({
-  padding: theme.spacing(6, 4),
-  backgroundColor: theme.palette.background.paper,
-  [theme.breakpoints.down('md')]: {
-    padding: theme.spacing(4, 3),
-  },
-  [theme.breakpoints.down('sm')]: {
-    padding: theme.spacing(3, 2),
-  },
+  padding: theme.spacing(8, 4),
+  backgroundColor: '#ffffff',
+  borderRadius: '20px',
+  margin: theme.spacing(4, 0),
+  boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
 }));
 
 const FeatureCard = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(4),
   textAlign: 'center',
-  padding: theme.spacing(3),
-  borderRadius: '8px',
-  transition: 'transform 0.2s',
+  backgroundColor: '#ffffff',
+  borderRadius: '16px',
+  boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+  transition: 'all 0.3s ease-in-out',
   '&:hover': {
-    transform: 'translateY(-5px)',
+    transform: 'translateY(-8px)',
+    boxShadow: '0 12px 24px rgba(0,0,0,0.1)',
   },
 }));
 
@@ -307,7 +307,23 @@ function Home() {
           variant="h4" 
           component="h2" 
           align="center" 
-          sx={{ mb: 6, fontWeight: 500 }}
+          sx={{ 
+            mb: 8, 
+            fontWeight: 600,
+            color: 'primary.main',
+            position: 'relative',
+            '&::after': {
+              content: '""',
+              position: 'absolute',
+              bottom: '-10px',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              width: '60px',
+              height: '3px',
+              backgroundColor: 'primary.main',
+              borderRadius: '2px',
+            }
+          }}
         >
           Why Choose Us
         </Typography>
@@ -319,12 +335,13 @@ function Home() {
                 sx={{ 
                   mb: 2,
                   color: 'primary.main',
-                  fontWeight: 500
+                  fontWeight: 600,
+                  fontSize: '1.3rem',
                 }}
               >
                 Fast Delivery
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '1rem', lineHeight: 1.6 }}>
                 Quick and reliable shipping to get your products to you as soon as possible.
               </Typography>
             </FeatureCard>
@@ -336,12 +353,13 @@ function Home() {
                 sx={{ 
                   mb: 2,
                   color: 'primary.main',
-                  fontWeight: 500
+                  fontWeight: 600,
+                  fontSize: '1.3rem',
                 }}
               >
                 Quality Products
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '1rem', lineHeight: 1.6 }}>
                 Carefully selected products that meet our high standards of quality.
               </Typography>
             </FeatureCard>
@@ -353,12 +371,13 @@ function Home() {
                 sx={{ 
                   mb: 2,
                   color: 'primary.main',
-                  fontWeight: 500
+                  fontWeight: 600,
+                  fontSize: '1.3rem',
                 }}
               >
                 Secure Shopping
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="text.secondary" sx={{ fontSize: '1rem', lineHeight: 1.6 }}>
                 Safe and secure payment processing for worry-free shopping.
               </Typography>
             </FeatureCard>
