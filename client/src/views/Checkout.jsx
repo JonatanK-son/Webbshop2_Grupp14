@@ -62,6 +62,7 @@ const Checkout = () => {
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     console.log("Updated field:", name, "New value:", value);
+    console.log(shippingInfo.country)
     setShippingInfo((prev) => ({
       ...prev,
       [name]: value
@@ -71,7 +72,7 @@ const Checkout = () => {
   const handleCountryChange = (newCountry) => {
     setShippingInfo((prev) => ({
       ...prev,
-      country: newCountry
+      country: newCountry ? newCountry.label : ''
     }));
   };
 
