@@ -34,7 +34,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AddIcon from "@mui/icons-material/Add";
 import { productService, adminService, userService } from "../services";
 import { useNavigate } from "react-router-dom";
-import api from "../services/api";
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   fontWeight: theme.typography.fontWeightMedium,
@@ -250,10 +249,18 @@ function Admin() {
     }
   };
 
-  const handleDeleteProduct = async (id) => {
+  const handleDeleteProduct = async (product) => {
     try {
-      await productService.deleteProduct(id);
-      setProducts(products.filter((p) => p.id !== id));
+      await fetch("http://localhost:5000/api/deleteImage/delete-image", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ product: product }),
+      });
+
+      await productService.deleteProduct(product.id);
+      setProducts(products.filter((p) => p.id !== product.id));
       setError(null);
     } catch (err) {
       console.error("Error deleting product:", err);
@@ -407,7 +414,7 @@ function Admin() {
                       </IconButton>
                       <IconButton
                         size="small"
-                        onClick={() => handleDeleteProduct(product.id)}
+                        onClick={() => handleDeleteProduct(product)}
                       >
                         <DeleteIcon fontSize="small" />
                       </IconButton>
