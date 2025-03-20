@@ -1,4 +1,4 @@
-import { Box, Typography, Button, Grid, Card, CardMedia, CardContent, CardActions } from '@mui/material';
+import { Box, Typography, Button, Grid, Card, CardMedia, CardContent, CardActions, Rating } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -229,6 +229,17 @@ function Home() {
                     <Typography variant="h6" color="primary" sx={{ fontSize: '1rem' }}>
                       ${product.price}
                     </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
+                      <Rating 
+                        value={product.averageRating || 0} 
+                        precision={0.5} 
+                        size="small" 
+                        readOnly 
+                      />
+                      <Typography variant="caption" sx={{ ml: 0.5 }}>
+                        ({product.averageRating ? product.averageRating.toFixed(1) : '0.0'})
+                      </Typography>
+                    </Box>
                   </CardContent>
                   <CardActions sx={{ p: 1.5, pt: 0 }}>
                     <Button 
