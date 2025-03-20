@@ -140,7 +140,7 @@ function Home() {
   };
 
   return (
-    <Box sx={{ width: '100%', margin: 0, padding: 0 }}>
+    <Box sx={{ width: "100%", margin: 0, padding: 0 }}>
       {/* Promo Banner */}
       <PromoBanner>
         <Typography variant="body2">
@@ -151,40 +151,40 @@ function Home() {
       {/* Hero Section */}
       <HeroSection>
         <HeroContent>
-          <Typography 
-            variant="h2" 
-            component="h1" 
-            sx={{ 
-              color: '#fff', 
-              fontWeight: 300, 
+          <Typography
+            variant="h2"
+            component="h1"
+            sx={{
+              color: "#fff",
+              fontWeight: 300,
               mb: 2,
-              fontSize: { xs: '2.5rem', md: '3.5rem' }
+              fontSize: { xs: "2.5rem", md: "3.5rem" },
             }}
           >
             Quality Products for Everyone
           </Typography>
-          <Typography 
-            variant="body1" 
-            sx={{ 
-              color: '#fff', 
+          <Typography
+            variant="body1"
+            sx={{
+              color: "#fff",
               mb: 4,
-              fontSize: { xs: '1rem', md: '1.2rem' }
+              fontSize: { xs: "1rem", md: "1.2rem" },
             }}
           >
             Discover our wide selection of products at competitive prices.
           </Typography>
-          <Button 
-            variant="contained" 
+          <Button
+            variant="contained"
             size="large"
-            onClick={() => navigate('/products')}
-            sx={{ 
-              backgroundColor: '#fff',
-              color: '#000',
+            onClick={() => navigate("/products")}
+            sx={{
+              backgroundColor: "#fff",
+              color: "#000",
               borderRadius: 0,
-              padding: '12px 30px',
-              '&:hover': {
-                backgroundColor: '#f0f0f0',
-              }
+              padding: "12px 30px",
+              "&:hover": {
+                backgroundColor: "#f0f0f0",
+              },
             }}
           >
             SHOP NOW
@@ -194,10 +194,10 @@ function Home() {
 
       {/* Featured Products Section */}
       <FeaturedSection>
-        <Typography 
-          variant="h4" 
-          component="h2" 
-          align="center" 
+        <Typography
+          variant="h4"
+          component="h2"
+          align="center"
           sx={{ mb: 6, fontWeight: 500 }}
         >
           Featured Products
@@ -206,7 +206,9 @@ function Home() {
         {loading ? (
           <Typography align="center">Loading products...</Typography>
         ) : error ? (
-          <Typography align="center" color="error">{error}</Typography>
+          <Typography align="center" color="error">
+            {error}
+          </Typography>
         ) : (
           <Grid container spacing={3}>
             {featuredProducts.map((product) => (
@@ -215,42 +217,73 @@ function Home() {
                   <ImageContainer>
                     <StyledCardMedia
                       component="img"
-                      image={product.image || 'https://via.placeholder.com/300x300'}
+                      image={
+                        product.image || "https://via.placeholder.com/300x300"
+                      }
                       alt={product.name}
                     />
                   </ImageContainer>
                   <CardContent sx={{ p: 1.5, flexGrow: 0 }}>
-                    <Typography variant="h6" component="h3" noWrap sx={{ fontSize: '1rem', mb: 0.5 }}>
+                    <Typography
+                      variant="h6"
+                      component="h3"
+                      noWrap
+                      sx={{ fontSize: "1rem", mb: 0.5 }}
+                    >
                       {product.name}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1, display: '-webkit-box', overflow: 'hidden', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2, fontSize: '0.85rem', lineHeight: 1.3 }}>
+                    <Typography
+                      variant="body2"
+                      color="text.secondary"
+                      sx={{
+                        mb: 1,
+                        display: "-webkit-box",
+                        overflow: "hidden",
+                        WebkitBoxOrient: "vertical",
+                        WebkitLineClamp: 2,
+                        fontSize: "0.85rem",
+                        lineHeight: 1.3,
+                      }}
+                    >
                       {product.description}
                     </Typography>
-                    <Typography variant="h6" color="primary" sx={{ fontSize: '1rem' }}>
+                    <Typography
+                      variant="h6"
+                      color="primary"
+                      sx={{ fontSize: "1rem" }}
+                    >
                       ${product.price}
                     </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                      <Rating 
-                        value={product.averageRating || 0} 
-                        precision={0.5} 
-                        size="small" 
-                        readOnly 
+                    <Box
+                      sx={{ display: "flex", alignItems: "center", mt: 0.5 }}
+                    >
+                      <Rating
+                        value={product.averageRating || 0}
+                        precision={0.5}
+                        size="small"
+                        readOnly
                       />
                       <Typography variant="caption" sx={{ ml: 0.5 }}>
-                        ({product.averageRating ? product.averageRating.toFixed(1) : '0.0'})
+                        (
+                        {product.averageRating
+                          ? product.averageRating.toFixed(1)
+                          : "0.0"}
+                        )
                       </Typography>
                     </Box>
                   </CardContent>
                   <CardActions sx={{ p: 1.5, pt: 0 }}>
-                    <Button 
-                      size="small" 
-                      onClick={() => navigate(`/products/${product.id}`)}
+                    <Button
+                      size="small"
+                      onClick={() =>
+                        navigate(`/products/${product.id}`, {state: { product }})
+                      }
                     >
                       View Details
                     </Button>
-                    <Button 
-                      size="small" 
-                      variant="contained" 
+                    <Button
+                      size="small"
+                      variant="contained"
                       onClick={() => handleAddToCart(product)}
                     >
                       Add to Cart
@@ -262,14 +295,14 @@ function Home() {
           </Grid>
         )}
 
-        <Box sx={{ textAlign: 'center', mt: 6 }}>
-          <Button 
-            variant="outlined" 
+        <Box sx={{ textAlign: "center", mt: 6 }}>
+          <Button
+            variant="outlined"
             size="large"
-            onClick={() => navigate('/products')}
-            sx={{ 
+            onClick={() => navigate("/products")}
+            sx={{
               borderRadius: 0,
-              padding: '10px 24px',
+              padding: "10px 24px",
             }}
           >
             View All Products
