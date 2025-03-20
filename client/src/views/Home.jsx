@@ -104,8 +104,12 @@ function Home() {
     fetchProducts();
   }, []);
 
-  const handleAddToCart = (product) => {
-    addToCart(product);
+  const handleProductClick = (product) => {
+    try {
+      navigate(`/products/${product.id}`);
+    } catch (error) {
+      console.error('Navigation error:', error);
+    }
   };
 
   return (
@@ -125,7 +129,7 @@ function Home() {
         </Container>
       </Section>
 
-      {/* Hero Section */}
+      {/* Hero Section - MORE COMPACT */}
       <Section 
         background="#2d2d2d" 
         sx={{ 
@@ -133,49 +137,49 @@ function Home() {
           alignItems: 'center', 
           justifyContent: 'center',
           py: 0,
-          height: { xs: '40vh', sm: '50vh' },
+          height: { xs: '30vh', sm: '35vh' }, // Reduced height for more compact appearance
           flex: '0 0 auto'
         }}
       >
         <Container maxWidth="xl" sx={{ 
           textAlign: 'center', 
-          py: { xs: 4, sm: 6 },
+          py: { xs: 2, sm: 3 }, // Reduced padding
           display: 'flex',
           justifyContent: 'center',
           width: '100%'
         }}>
-          <Box sx={{ maxWidth: 800, mx: 'auto', px: 2 }}>
+          <Box sx={{ maxWidth: 700, mx: 'auto', px: { xs: 1, sm: 2 } }}> {/* Reduced max width and padding */}
             <Typography 
-              variant="h3" 
+              variant="h4" // Reduced from h3 to h4
               component="h1" 
               sx={{ 
                 color: '#fff', 
                 fontWeight: 300, 
-                mb: 1,
-                fontSize: { xs: '2rem', md: '2.75rem' }
+                mb: 0.5, // Reduced margin
+                fontSize: { xs: '1.75rem', md: '2.25rem' } // Smaller font sizes
               }}
             >
               Quality Products for Everyone
             </Typography>
             <Typography 
-              variant="body1" 
+              variant="body2" // Changed from body1 to body2
               sx={{ 
                 color: '#fff', 
-                mb: 2,
-                fontSize: { xs: '0.9rem', md: '1.1rem' }
+                mb: 1.5, // Reduced margin
+                fontSize: { xs: '0.8rem', md: '0.95rem' } // Smaller font sizes
               }}
             >
               Discover our wide selection of products at competitive prices.
             </Typography>
             <Button 
               variant="contained" 
-              size="medium"
+              size="small" // Changed from medium to small
               onClick={() => navigate('/products')}
               sx={{ 
                 backgroundColor: '#fff',
                 color: '#000',
                 borderRadius: 0,
-                padding: '8px 20px',
+                padding: '6px 16px', // Smaller padding
                 '&:hover': {
                   backgroundColor: '#f0f0f0',
                 }
@@ -206,7 +210,7 @@ function Home() {
               {featuredProducts.map((product) => (
                 <Grid item key={product.id} xs={6} sm={4} md={3} lg={2}>
                   <ProductCard elevation={0}>
-                    <CardActionArea onClick={() => navigate(`/products/${product.id}`)}>
+                    <CardActionArea onClick={() => handleProductClick(product)}> {/* Using new handler function */}
                       <ImageContainer>
                         <StyledCardMedia
                           component="img"
