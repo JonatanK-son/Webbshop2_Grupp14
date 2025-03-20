@@ -104,7 +104,7 @@ const RatingComponent = ({ productId }) => {
       setUserRating(0);
       setComment("");
       setOpenDialog(false);
-      await loadRatings(); // Reload ratings after successful submission
+      await loadRatings();
     } catch (error) {
       console.error("Error submitting rating:", error);
       alert(
