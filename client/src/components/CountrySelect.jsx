@@ -3,12 +3,11 @@ import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
 
-export default function CountrySelect() {
-  const [value, setValue] = useState("");
+export default function CountrySelect({ value, onChange }) {
   const [error, setError] = useState(false);
 
   const handleChange = (event, newValue) => {
-    setValue(newValue);
+    onChange(newValue);
     setError(false);
   };
 

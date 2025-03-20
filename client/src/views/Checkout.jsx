@@ -68,6 +68,13 @@ const Checkout = () => {
     }));
   };
 
+  const handleCountryChange = (newCountry) => {
+    setShippingInfo((prev) => ({
+      ...prev,
+      country: newCountry
+    }));
+  };
+
   const handleCheckout = async () => {
     if (!isAuthenticated) {
       setError("You need to be logged in to checkout");
@@ -355,7 +362,7 @@ const Checkout = () => {
                   label="Country"
                   name="country"
                   value={shippingInfo.country}
-                  onChange={handleInputChange}
+                  onChange={handleCountryChange}
                 />
               </Grid>
             </Grid>
