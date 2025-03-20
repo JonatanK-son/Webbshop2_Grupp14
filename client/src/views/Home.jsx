@@ -7,22 +7,28 @@ import { useCart } from '../context/CartContext';
 
 // Hero section with color background
 const HeroSection = styled(Box)(({ theme }) => ({
-  height: '100vh',
+  height: '40vh',
   width: '100%',
-  backgroundColor: '#2d2d2d',
+  backgroundColor: theme.palette.primary.main,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  padding: 0,
+  padding: theme.spacing(4, 0),
   position: 'relative',
-  marginBottom: 0,
+  marginBottom: theme.spacing(4),
+  borderRadius: '0 0 20px 20px',
+  boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
 }));
 
 const HeroContent = styled(Box)(({ theme }) => ({
   zIndex: 1,
-  maxWidth: '800px',
+  maxWidth: '600px',
   padding: theme.spacing(4),
   textAlign: 'center',
+  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+  borderRadius: '12px',
+  backdropFilter: 'blur(5px)',
+  marginTop: 0,
   [theme.breakpoints.down('md')]: {
     padding: theme.spacing(3),
   },
@@ -32,8 +38,8 @@ const HeroContent = styled(Box)(({ theme }) => ({
 }));
 
 const PromoBanner = styled(Box)(({ theme }) => ({
-  backgroundColor: '#000',
-  color: '#fff',
+  backgroundColor: theme.palette.secondary.main,
+  color: theme.palette.background.paper,
   padding: theme.spacing(1),
   textAlign: 'center',
   width: '100%',
@@ -41,7 +47,7 @@ const PromoBanner = styled(Box)(({ theme }) => ({
 
 const FeaturedSection = styled(Box)(({ theme }) => ({
   padding: theme.spacing(8, 4),
-  backgroundColor: '#f5f5f5',
+  backgroundColor: theme.palette.background.default,
   [theme.breakpoints.down('md')]: {
     padding: theme.spacing(6, 3),
   },
@@ -76,6 +82,27 @@ const StyledCardMedia = styled(CardMedia)(({ theme }) => ({
   width: '100%',
   height: '100%',
   objectFit: 'cover', // This ensures the image covers the area without distortion
+}));
+
+const FeaturesSection = styled(Box)(({ theme }) => ({
+  padding: theme.spacing(6, 4),
+  backgroundColor: theme.palette.background.paper,
+  [theme.breakpoints.down('md')]: {
+    padding: theme.spacing(4, 3),
+  },
+  [theme.breakpoints.down('sm')]: {
+    padding: theme.spacing(3, 2),
+  },
+}));
+
+const FeatureCard = styled(Box)(({ theme }) => ({
+  textAlign: 'center',
+  padding: theme.spacing(3),
+  borderRadius: '8px',
+  transition: 'transform 0.2s',
+  '&:hover': {
+    transform: 'translateY(-5px)',
+  },
 }));
 
 function Home() {
@@ -155,10 +182,11 @@ function Home() {
             variant="h2" 
             component="h1" 
             sx={{ 
-              color: '#fff', 
-              fontWeight: 300, 
+              color: 'background.paper', 
+              fontWeight: 400, 
               mb: 2,
-              fontSize: { xs: '2.5rem', md: '3.5rem' }
+              fontSize: { xs: '1.5rem', sm: '1.8rem', md: '2.2rem' },
+              letterSpacing: '0.3px'
             }}
           >
             Quality Products for Everyone
@@ -166,9 +194,12 @@ function Home() {
           <Typography 
             variant="body1" 
             sx={{ 
-              color: '#fff', 
-              mb: 4,
-              fontSize: { xs: '1rem', md: '1.2rem' }
+              color: 'background.paper', 
+              mb: 12,
+              fontSize: { xs: '0.8rem', sm: '0.9rem', md: '1rem' },
+              lineHeight: 1.5,
+              maxWidth: '400px',
+              margin: '0 auto'
             }}
           >
             Discover our wide selection of products at competitive prices.
@@ -178,12 +209,16 @@ function Home() {
             size="large"
             onClick={() => navigate('/products')}
             sx={{ 
-              backgroundColor: '#fff',
-              color: '#000',
-              borderRadius: 0,
-              padding: '12px 30px',
+              backgroundColor: 'background.paper',
+              color: 'primary.main',
+              borderRadius: '8px',
+              padding: '8px 20px',
+              fontSize: '0.8rem',
+              textTransform: 'none',
+              letterSpacing: '0.3px',
+              marginTop: '2rem',
               '&:hover': {
-                backgroundColor: '#f0f0f0',
+                backgroundColor: 'background.default',
               }
             }}
           >
@@ -265,6 +300,71 @@ function Home() {
           </Button>
         </Box>
       </FeaturedSection>
+
+      {/* Features Section */}
+      <FeaturesSection>
+        <Typography 
+          variant="h4" 
+          component="h2" 
+          align="center" 
+          sx={{ mb: 6, fontWeight: 500 }}
+        >
+          Why Choose Us
+        </Typography>
+        <Grid container spacing={4}>
+          <Grid item xs={12} sm={4}>
+            <FeatureCard>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  mb: 2,
+                  color: 'primary.main',
+                  fontWeight: 500
+                }}
+              >
+                Fast Delivery
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Quick and reliable shipping to get your products to you as soon as possible.
+              </Typography>
+            </FeatureCard>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <FeatureCard>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  mb: 2,
+                  color: 'primary.main',
+                  fontWeight: 500
+                }}
+              >
+                Quality Products
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Carefully selected products that meet our high standards of quality.
+              </Typography>
+            </FeatureCard>
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <FeatureCard>
+              <Typography 
+                variant="h6" 
+                sx={{ 
+                  mb: 2,
+                  color: 'primary.main',
+                  fontWeight: 500
+                }}
+              >
+                Secure Shopping
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Safe and secure payment processing for worry-free shopping.
+              </Typography>
+            </FeatureCard>
+          </Grid>
+        </Grid>
+      </FeaturesSection>
     </Box>
   );
 }
