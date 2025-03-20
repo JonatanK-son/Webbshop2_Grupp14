@@ -222,7 +222,7 @@ const Description = () => {
           <TabPanel value={tabValue} index={1}>
             <Typography variant="body2" paragraph>
               <strong>Shipping Information</strong><br/>
-              We offer free standard shipping on all orders. Delivery typically takes 3-5 business days.
+              We offer free standard shipping on all orders over $50. Delivery typically takes 3-5 business days.
             </Typography>
             <Typography variant="body2" paragraph>
               <strong>Return Policy</strong><br/>
