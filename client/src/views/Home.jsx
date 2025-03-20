@@ -1,4 +1,4 @@
-import { Box, Typography, Button, Grid, Card, CardMedia, CardContent, Rating, Container, CardActionArea, Paper } from '@mui/material';
+import { Box, Typography, Button, Grid, Rating, Container, Paper } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -8,6 +8,7 @@ import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined
 import SupportAgentOutlinedIcon from '@mui/icons-material/SupportAgentOutlined';
 import VerifiedOutlinedIcon from '@mui/icons-material/VerifiedOutlined';
 import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
+import ProductCard from '../components/ProductCard';
 
 // Styled components for consistent design
 const Section = styled(Box)(({ theme, background }) => ({
@@ -20,31 +21,6 @@ const Section = styled(Box)(({ theme, background }) => ({
   [theme.breakpoints.down('sm')]: {
     padding: theme.spacing(2, 0),
   },
-}));
-
-const ProductCard = styled(Card)(({ theme }) => ({
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  border: '1px solid #f0f0f0',
-  borderRadius: 0,
-  boxShadow: 'none',
-}));
-
-const ImageContainer = styled(Box)(({ theme }) => ({
-  position: 'relative',
-  paddingTop: '100%', // 1:1 Aspect ratio (square)
-  width: '100%',
-  overflow: 'hidden',
-}));
-
-const StyledCardMedia = styled(CardMedia)(({ theme }) => ({
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: '100%',
-  objectFit: 'cover',
 }));
 
 function Home() {
@@ -209,39 +185,7 @@ function Home() {
             <Grid container spacing={1}>
               {featuredProducts.map((product) => (
                 <Grid item key={product.id} xs={6} sm={4} md={3} lg={2}>
-                  <ProductCard elevation={0}>
-                    <CardActionArea onClick={() => handleProductClick(product)}> {/* Using new handler function */}
-                      <ImageContainer>
-                        <StyledCardMedia
-                          component="img"
-                          image={product.image || 'https://via.placeholder.com/300x300'}
-                          alt={product.name}
-                        />
-                      </ImageContainer>
-                      <CardContent sx={{ p: 1, pb: 1, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                        <Typography variant="body2" component="div" noWrap sx={{ fontWeight: 'medium', mb: 0.5 }}>
-                          {product.name}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {product.category || 'General'}
-                        </Typography>
-                        <Typography variant="body2" color="primary" sx={{ mt: 0.5, fontWeight: 'bold' }}>
-                          ${product.price}
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                          <Rating 
-                            value={product.averageRating || 0} 
-                            precision={0.5} 
-                            size="small" 
-                            readOnly 
-                          />
-                          <Typography variant="caption" sx={{ ml: 0.5 }}>
-                            ({product.averageRating ? product.averageRating.toFixed(1) : '0.0'})
-                          </Typography>
-                        </Box>
-                      </CardContent>
-                    </CardActionArea>
-                  </ProductCard>
+                  <ProductCard product={product} />
                 </Grid>
               ))}
             </Grid>

@@ -1,43 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Box, Typography, Grid, Card, CardContent, CardMedia, CardActionArea, Button, 
-  TextField, InputAdornment, FormControl, InputLabel, Select, MenuItem, Container, Snackbar, Alert, Rating } from '@mui/material';
+import { Box, Typography, Grid, TextField, InputAdornment, FormControl, InputLabel, Select, MenuItem, Container, Alert } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import api from '../services/api';
-
-// Updated StyledCard with more compact styling and no hover effects
-const StyledCard = styled(Card)(({ theme }) => ({
-  height: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  borderRadius: 0,
-  border: '1px solid #f0f0f0',
-  boxShadow: 'none',
-}));
-
-// Create a styled component for consistent image containers
-const ImageContainer = styled(Box)(({ theme }) => ({
-  position: 'relative',
-  paddingTop: '100%', // 1:1 Aspect ratio (square)
-  width: '100%',
-  overflow: 'hidden',
-}));
-
-// Updated CardMedia styling to maintain aspect ratio
-const StyledCardMedia = styled(CardMedia)(({ theme }) => ({
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  width: '100%',
-  height: '100%',
-  objectFit: 'cover', // This ensures the image covers the area without distortion
-}));
-
-const PriceTypography = styled(Typography)(({ theme }) => ({
-  fontWeight: 'bold',
-  color: theme.palette.primary.main,
-}));
+import ProductCard from '../components/ProductCard';
 
 const FilterContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
@@ -51,7 +17,6 @@ const FilterContainer = styled(Box)(({ theme }) => ({
 }));
 
 function Products() {
-  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState('');
   const [sortBy, setSortBy] = useState('name');
   const [category, setCategory] = useState('all');
@@ -81,12 +46,7 @@ function Products() {
     };
 
     fetchProducts();
-  }, [api]);
-
-  const handleProductClick = (product) => {
-    console.log("Product clicked: ", product);
-    navigate(`/products/${product.id}`, { state: { product } });
-  };
+  }, []);
 
   // Filter and sort products
   const filteredProducts = products
@@ -186,39 +146,7 @@ function Products() {
         <Grid container spacing={1}>
           {filteredProducts.map((product) => (
             <Grid item xs={6} sm={4} md={3} lg={2} key={product.id}>
-              <StyledCard elevation={0}>
-                <CardActionArea onClick={() => handleProductClick(product)}>
-                  <ImageContainer>
-                    <StyledCardMedia
-                      component="img"
-                      image={product.image || 'https://via.placeholder.com/300x300'}
-                      alt={product.name}
-                    />
-                  </ImageContainer>
-                  <CardContent sx={{ p: 1, pb: 1, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                    <Typography variant="body2" component="div" noWrap sx={{ fontWeight: 'medium', mb: 0.5 }}>
-                      {product.name}
-                    </Typography>
-                    <Typography variant="caption" color="text.secondary">
-                      {product.category}
-                    </Typography>
-                    <PriceTypography variant="body2" sx={{ mt: 0.5 }}>
-                      ${product.price}
-                    </PriceTypography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', mt: 0.5 }}>
-                      <Rating 
-                        value={product.averageRating || 0} 
-                        precision={0.5} 
-                        size="small" 
-                        readOnly 
-                      />
-                      <Typography variant="caption" sx={{ ml: 0.5 }}>
-                        ({product.averageRating ? product.averageRating.toFixed(1) : '0.0'})
-                      </Typography>
-                    </Box>
-                  </CardContent>
-                </CardActionArea>
-              </StyledCard>
+              <ProductCard product={product} />
             </Grid>
           ))}
         </Grid>
