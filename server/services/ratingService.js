@@ -49,7 +49,7 @@ class RatingService {
       throw new Error("Rating not found");
     }
 
-    if (review.userId !== userId && userId !== 1) {
+    if (review.userId !== userId) {
       throw new Error("You do not have permission to edit this review");
     }
 

@@ -230,11 +230,15 @@ const RatingComponent = ({ productId }) => {
                   </React.Fragment>
                 }
               />
-              {(currentUser?.id === rating.userId || currentUser?.role === "admin") && (
+              {(currentUser?.id === rating.userId) && (
                 <Box sx={{ ml: 2 }}>
                   <Button size="small" onClick={() => handleEdit(rating)}>
                     Edit
                   </Button>
+                </Box>
+              )}
+                {(currentUser?.id === rating.userId || currentUser?.role === "admin") && (
+                <Box sx={{ ml: 2 }}>
                   <Button
                     size="small"
                     color="error"

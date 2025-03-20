@@ -49,12 +49,12 @@ router.put('/:id', async (req, res) => {
 // Delete a rating
 router.delete("/:id", async (req, res) => {
   try {
-    const { userId } = req.body; // ✅ Extract userId from request body
+    const { userId } = req.body; // Extract userId from request body
     if (!userId) {
       return res.status(400).json({ error: "User ID is required" });
     }
 
-    await ratingService.deleteRating(req.params.id, userId); // ✅ Pass userId
+    await ratingService.deleteRating(req.params.id, userId); // Pass userId
     res.status(204).end();
   } catch (error) {
     if (error.message === "Rating not found") {
