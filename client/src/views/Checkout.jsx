@@ -23,6 +23,7 @@ import { useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useUser } from '../context/UserContext';
 import { cartService } from '../services';
+import CountrySelect from "../components/CountrySelect";
 
 const steps = ['Review Cart', 'Shipping Information', 'Payment', 'Confirmation'];
 
@@ -60,9 +61,18 @@ const Checkout = () => {
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log("Updated field:", name, "New value:", value);
+    console.log(shippingInfo.country)
     setShippingInfo((prev) => ({
       ...prev,
       [name]: value
+    }));
+  };
+
+  const handleCountryChange = (newCountry) => {
+    setShippingInfo((prev) => ({
+      ...prev,
+      country: newCountry ? newCountry.label : ''
     }));
   };
 
@@ -175,6 +185,7 @@ const Checkout = () => {
     }
     
     if (activeStep === 1) {
+
       return shippingInfo.firstName && 
              shippingInfo.lastName && 
              shippingInfo.address && 
@@ -346,13 +357,12 @@ const Checkout = () => {
                 />
               </Grid>
               <Grid item xs={12}>
-                <TextField
+                <CountrySelect
                   required
                   fullWidth
                   label="Country"
                   name="country"
-                  value={shippingInfo.country}
-                  onChange={handleInputChange}
+                  onChange={handleCountryChange}
                 />
               </Grid>
             </Grid>
