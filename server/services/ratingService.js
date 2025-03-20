@@ -55,16 +55,16 @@ class RatingService {
     return review;
   }
 
-  async deleteRating(id, userId, isAdmin) {
+  async deleteRating(id, userId) {
     const review = await ratings.findByPk(id);
 
     if (!review) {
       throw new Error("Rating not found");
     }
 
-    // Check permission: Only the owner or an admin can delete
-    if (review.userId !== userId && !isAdmin) {
-      throw new Error("You do not have permission to delete this review");
+    // ✅ Allow admins (userId = 1) to delete any review
+    if (review.userId !== userId && userId !== 1) {
+      throw new Error("You do not have permission to delete this review.");
     }
 
     await review.destroy();
