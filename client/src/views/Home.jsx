@@ -90,8 +90,11 @@ function Home() {
       try {
         setLoading(true);
         const products = await productService.getAllProducts();
-        // For now, just show the first 4 products as featured
-        setFeaturedProducts(products.slice(0, 4));
+
+        // Sort by rating (high to low) before selecting featured products
+        const sortedProducts = products.sort((a, b) => (b.averageRating || 0) - (a.averageRating || 0));
+  
+        setFeaturedProducts(sortedProducts.slice(0, 4)); // Get top 4 rated products
         setError(null);
       } catch (err) {
         console.error('Error fetching products:', err);
