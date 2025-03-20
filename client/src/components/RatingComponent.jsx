@@ -76,14 +76,12 @@ const RatingComponent = ({ productId }) => {
   };
 
   // 5. Implement the handleDelete function
-  const handleDelete = async (reviewId) => {
+  const handleDelete = async ( rating ) => {
     if (window.confirm("Are you sure you want to delete this review?")) {
       try {
-        console.log("Deleting review:", reviewId, "User ID:", currentUser.id); // Debugging log
+        console.log("Deleting review:", rating.id, "User ID:", currentUser.id); // Debugging log
 
-        await ratingService.deleteRating(reviewId, {
-          userId: currentUser.id, // ✅ Ensure userId is sent
-        });
+        await ratingService.deleteRating(rating.id, currentUser.id);
 
         await loadRatings();
       } catch (error) {
@@ -243,7 +241,7 @@ const RatingComponent = ({ productId }) => {
                   <Button
                     size="small"
                     color="error"
-                    onClick={() => handleDelete(rating.id)}
+                    onClick={() => handleDelete(rating)}
                   >
                     Delete
                   </Button>
