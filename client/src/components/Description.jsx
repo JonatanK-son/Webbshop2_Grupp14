@@ -178,7 +178,7 @@ const Description = () => {
                   <Grid item xs={4}>
                     <Stack direction="row" spacing={0.5} alignItems="center">
                       <LocalShippingOutlinedIcon color="action" fontSize="small" />
-                      <Typography variant="caption">Free Shipping</Typography>
+                      <Typography variant="caption">Fast Shipping</Typography>
                     </Stack>
                   </Grid>
                   <Grid item xs={4}>
