@@ -4,7 +4,6 @@ import './styles/index.css'
 import App from './App.jsx'
 import Home from './views/Home.jsx'
 import ProductDetails from './views/ProductDetails.jsx'
-import ProductEdit from './views/ProductEdit.jsx'
 import Products from './views/Products.jsx'
 import Admin from './views/Admin.jsx'
 import Login from './views/Login.jsx'
@@ -24,10 +23,6 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <Home />
-      },
-      { 
-        path: '/products/new', 
-        element: <ProductEdit /> 
       },
       { 
         path: '/products', 
