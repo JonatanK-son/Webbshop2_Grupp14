@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { Container } from "@mui/material";
+import { Container, Box } from "@mui/material";
 import Description from "../components/Description";
-import RatingComponent from "../components/RatingComponent";
 import { useParams } from "react-router-dom";
 
 function ProductDetails() {
@@ -17,23 +16,16 @@ function ProductDetails() {
   };
 
   return (
-    <main className="App">
-      <Container component="section" maxWidth={"lg"}>
-        <section className="core">
-          <Description
-            onQuant={quant}
-            onAdd={addQuant}
-            onRemove={removeQuant}
-            onSetOrderedQuant={setOrderedQuant}
-          />
-        </section>
+    <Box component="main" sx={{ width: '100%', bgcolor: '#f5f5f5', py: 3, minHeight: '100vh' }}>
+      <Container maxWidth="lg">
+        <Description
+          onQuant={quant}
+          onAdd={addQuant}
+          onRemove={removeQuant}
+          onSetOrderedQuant={setOrderedQuant}
+        />
       </Container>
-      <Container component="section" maxWidth={"lg"} sx={{mt: 3}}>
-        <section className="rating">
-        <RatingComponent productId={id} />
-        </section>
-      </Container>
-    </main>
+    </Box>
   );
 }
 

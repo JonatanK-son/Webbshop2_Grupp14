@@ -5,7 +5,6 @@ import { styled } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import SearchIcon from '@mui/icons-material/Search';
 import api from '../services/api';
-import AddToCartButton from "../components/AddToCartButton";
 
 // Updated StyledCard with more compact styling and no hover effects
 const StyledCard = styled(Card)(({ theme }) => ({
@@ -196,8 +195,8 @@ function Products() {
                       alt={product.name}
                     />
                   </ImageContainer>
-                  <CardContent sx={{ p: 1, pb: 0.5 }}>
-                    <Typography gutterBottom variant="body2" component="div" noWrap sx={{ fontWeight: 'medium' }}>
+                  <CardContent sx={{ p: 1, pb: 1, flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                    <Typography variant="body2" component="div" noWrap sx={{ fontWeight: 'medium', mb: 0.5 }}>
                       {product.name}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
@@ -219,9 +218,6 @@ function Products() {
                     </Box>
                   </CardContent>
                 </CardActionArea>
-                <Box sx={{ p: 1, pt: 0 }}>
-                  <AddToCartButton product={product} size="small"/>
-                </Box>
               </StyledCard>
             </Grid>
           ))}

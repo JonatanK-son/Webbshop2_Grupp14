@@ -233,16 +233,12 @@ function Home() {
                   <CardActions sx={{ p: 1.5, pt: 0 }}>
                     <Button 
                       size="small" 
+                      variant="contained"
+                      fullWidth
                       onClick={() => navigate(`/products/${product.id}`)}
+                      sx={{ borderRadius: 0 }}
                     >
                       View Details
-                    </Button>
-                    <Button 
-                      size="small" 
-                      variant="contained" 
-                      onClick={() => handleAddToCart(product)}
-                    >
-                      Add to Cart
                     </Button>
                   </CardActions>
                 </ProductCard>
