@@ -4,6 +4,7 @@ import cartService from './cartService';
 import userService from './userService';
 import ratingService from './ratingService';
 import adminService from './adminService';
+import orderService from './orderService';
 
 export {
   api,
@@ -11,5 +12,6 @@ export {
   cartService,
   userService,
   ratingService,
-  adminService
+  adminService,
+  orderService
 }; 

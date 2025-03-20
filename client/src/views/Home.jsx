@@ -50,15 +50,32 @@ const FeaturedSection = styled(Box)(({ theme }) => ({
   },
 }));
 
+// Updated ProductCard with compact styling and no hover effects
 const ProductCard = styled(Card)(({ theme }) => ({
   height: '100%',
   display: 'flex',
   flexDirection: 'column',
-  transition: 'transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out',
-  '&:hover': {
-    transform: 'translateY(-5px)',
-    boxShadow: theme.shadows[10],
-  },
+  border: '1px solid #f0f0f0',
+  borderRadius: 0,
+  boxShadow: 'none',
+}));
+
+// Create a styled component for consistent image containers
+const ImageContainer = styled(Box)(({ theme }) => ({
+  position: 'relative',
+  paddingTop: '100%', // 1:1 Aspect ratio (square)
+  width: '100%',
+  overflow: 'hidden',
+}));
+
+// Updated CardMedia styling to maintain aspect ratio
+const StyledCardMedia = styled(CardMedia)(({ theme }) => ({
+  position: 'absolute',
+  top: 0,
+  left: 0,
+  width: '100%',
+  height: '100%',
+  objectFit: 'cover', // This ensures the image covers the area without distortion
 }));
 
 function Home() {
@@ -116,7 +133,7 @@ function Home() {
     };
 
     fetchProducts();
-  }, []);
+  }, [productService]);
 
   const handleAddToCart = (product) => {
     addToCart(product);
@@ -191,28 +208,29 @@ function Home() {
         ) : error ? (
           <Typography align="center" color="error">{error}</Typography>
         ) : (
-          <Grid container spacing={4}>
+          <Grid container spacing={3}>
             {featuredProducts.map((product) => (
               <Grid item key={product.id} xs={12} sm={6} md={3}>
                 <ProductCard>
-                  <CardMedia
-                    component="img"
-                    height="200"
-                    image={product.image}
-                    alt={product.name}
-                  />
-                  <CardContent sx={{ flexGrow: 1 }}>
-                    <Typography gutterBottom variant="h6" component="h3">
+                  <ImageContainer>
+                    <StyledCardMedia
+                      component="img"
+                      image={product.image || 'https://via.placeholder.com/300x300'}
+                      alt={product.name}
+                    />
+                  </ImageContainer>
+                  <CardContent sx={{ p: 1.5, flexGrow: 0 }}>
+                    <Typography variant="h6" component="h3" noWrap sx={{ fontSize: '1rem', mb: 0.5 }}>
                       {product.name}
                     </Typography>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 1, display: '-webkit-box', overflow: 'hidden', WebkitBoxOrient: 'vertical', WebkitLineClamp: 2, fontSize: '0.85rem', lineHeight: 1.3 }}>
                       {product.description}
                     </Typography>
-                    <Typography variant="h6" color="primary">
+                    <Typography variant="h6" color="primary" sx={{ fontSize: '1rem' }}>
                       ${product.price}
                     </Typography>
                   </CardContent>
-                  <CardActions>
+                  <CardActions sx={{ p: 1.5, pt: 0 }}>
                     <Button 
                       size="small" 
                       onClick={() => navigate(`/products/${product.id}`)}

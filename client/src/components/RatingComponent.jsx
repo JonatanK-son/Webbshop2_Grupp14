@@ -138,7 +138,7 @@ const RatingComponent = ({ productId }) => {
   }
 
   return (
-    <Paper sx={{ p: 2, mt: 3 }}>
+    <Paper sx={{ p: 3, maxWidth: 800, margin: "auto" }}>
       <Box sx={{ mb: 3 }}>
         <Typography variant="h6" gutterBottom>
           Product Ratings

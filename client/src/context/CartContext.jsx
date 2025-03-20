@@ -39,7 +39,18 @@ export const CartProvider = ({ children }) => {
       
       try {
         const cartData = await cartService.getCart(userId);
-        setCartItems(cartData.items || []);
+        
+        // Transform the API response to match the client-side cart format
+        const cartItems = cartData.cart_rows ? cartData.cart_rows.map(row => ({
+          id: row.productId, // Use product ID from cart row
+          itemId: row.id, // Store cart_row id for API operations
+          name: row.product?.name,
+          price: row.product?.price,
+          image: row.product?.image,
+          quantity: row.quantity
+        })) : [];
+        
+        setCartItems(cartItems);
       } catch (err) {
         console.error('Failed to fetch cart:', err);
         setError('Failed to load your cart. Please try again.');
@@ -70,7 +81,21 @@ export const CartProvider = ({ children }) => {
 
   // Cart functions
   const addToCart = async (product, quantity = 1) => {
-    // Optimistic UI update
+    // If user is logged in, sync with API first to ensure consistency
+    if (userId) {
+      try {
+        const response = await cartService.addToCart(userId, product.id, quantity);
+        
+        // Refresh the cart to ensure consistency
+        await refreshCart();
+        return;
+      } catch (err) {
+        console.error('Failed to add item to cart:', err);
+        // Continue with local update if API fails
+      }
+    }
+    
+    // Local update (for guest users or if API failed)
     setCartItems(prevItems => {
       const existingItemIndex = prevItems.findIndex(item => item.id === product.id);
       
@@ -91,31 +116,31 @@ export const CartProvider = ({ children }) => {
         }];
       }
     });
-    
-    // If user is logged in, sync with API
-    if (userId) {
-      try {
-        await cartService.addToCart(userId, product.id, quantity);
-      } catch (err) {
-        console.error('Failed to add item to cart:', err);
-        // You could revert the optimistic update here if needed
-      }
-    }
   };
 
   const removeFromCart = async (productId) => {
-    // Optimistic UI update
-    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
-    
     // If user is logged in, sync with API
     if (userId) {
       try {
-        await cartService.removeFromCart(userId, productId);
+        // Find the item to get the cart_row id
+        const item = cartItems.find(item => item.id === productId);
+        if (item && item.itemId) {
+          await cartService.removeFromCart(userId, item.itemId);
+        } else {
+          console.error('Cannot find item ID for removal');
+        }
+        
+        // Refresh the cart after API call
+        await refreshCart();
+        return;
       } catch (err) {
         console.error('Failed to remove item from cart:', err);
-        // You could revert the optimistic update here if needed
+        // Continue with local update if API fails
       }
     }
+    
+    // Local update (for guest users or if API failed)
+    setCartItems(prevItems => prevItems.filter(item => item.id !== productId));
   };
 
   const updateQuantity = async (productId, quantity) => {
@@ -124,36 +149,83 @@ export const CartProvider = ({ children }) => {
       return;
     }
     
-    // Optimistic UI update
+    // If user is logged in, sync with API
+    if (userId) {
+      try {
+        // Find the item to get the cart_row id
+        const item = cartItems.find(item => item.id === productId);
+        if (item && item.itemId) {
+          await cartService.updateCartItem(userId, item.itemId, quantity);
+        } else {
+          console.error('Cannot find item ID for update');
+        }
+        
+        // Refresh the cart after API call
+        await refreshCart();
+        return;
+      } catch (err) {
+        console.error('Failed to update cart item quantity:', err);
+        // Continue with local update if API fails
+      }
+    }
+    
+    // Local update (for guest users or if API failed)
     setCartItems(prevItems => 
       prevItems.map(item => 
         item.id === productId ? { ...item, quantity } : item
       )
     );
-    
-    // If user is logged in, sync with API
-    if (userId) {
-      try {
-        await cartService.updateCartItem(userId, productId, quantity);
-      } catch (err) {
-        console.error('Failed to update cart item quantity:', err);
-        // You could revert the optimistic update here if needed
-      }
-    }
   };
 
   const clearCart = async () => {
-    // Optimistic UI update
-    setCartItems([]);
-    
     // If user is logged in, sync with API
     if (userId) {
       try {
         await cartService.clearCart(userId);
+        
+        // Refresh the cart after API call
+        await refreshCart();
+        return;
       } catch (err) {
         console.error('Failed to clear cart:', err);
-        // You could revert the optimistic update here if needed
+        // Continue with local update if API fails
       }
+    }
+    
+    // Local update (for guest users or if API failed)
+    setCartItems([]);
+  };
+
+  const refreshCart = async () => {
+    if (!userId) {
+      return;
+    }
+    
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const cartData = await cartService.getCart(userId);
+      console.log('Cart data from API:', cartData); // Log for debugging
+      
+      // Transform the API response to match the client-side cart format
+      const cartItems = cartData.cart_rows ? cartData.cart_rows.map(row => ({
+        id: row.productId, // Use productId for client operations
+        itemId: row.id, // Store cart_row id for API operations
+        name: row.product?.name,
+        price: row.product?.price,
+        image: row.product?.image,
+        quantity: row.quantity,
+        amount: row.amount // Include amount field
+      })) : [];
+      
+      console.log('Transformed cart items:', cartItems); // Log for debugging
+      setCartItems(cartItems);
+    } catch (err) {
+      console.error('Failed to refresh cart:', err);
+      setError('Failed to refresh your cart. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -175,6 +247,7 @@ export const CartProvider = ({ children }) => {
     removeFromCart,
     updateQuantity,
     clearCart,
+    refreshCart,
     toggleCart,
     setCartOpen
   };
