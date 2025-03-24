@@ -198,23 +198,19 @@ const OrderDetail = () => {
                         />
                       </ListItemAvatar>
                       <ListItemText
-                        primary={
-                          <Typography variant="subtitle1">
-                            {row.product.name}
-                          </Typography>
+                        primary={ `${row.product.name}`
                         }
-                        secondary={
-                          <Box>
-                            <Typography variant="body2" component="span" sx={{ display: 'block' }}>
-                              Quantity: {row.quantity}
-                            </Typography>
-                            <Typography variant="body2" component="span" sx={{ display: 'block' }}>
-                              Price: ${row.product.price.toFixed(2)}
-                            </Typography>
-                            <Typography variant="body2" component="span" sx={{ display: 'block', fontWeight: 'bold' }}>
-                              Subtotal: ${(row.product.price * row.quantity).toFixed(2)}
-                            </Typography>
-                          </Box>
+                        secondary={<>
+                          <span style={{ display: 'block' }}>
+                            Quantity: {row.quantity}
+                          </span>
+                          <span style={{ display: 'block' }}>
+                            Price: ${row.product.price.toFixed(2)}
+                          </span>
+                          <span style={{ display: 'block', fontWeight: 'bold' }}>
+                            Subtotal: ${(row.product.price * row.quantity).toFixed(2)}
+                          </span>
+                        </>
                         }
                       />
                     </ListItem>
