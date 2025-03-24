@@ -115,27 +115,18 @@ const CartDrawer = () => {
                   </ListItemAvatar>
                   <ListItemText
                     primary={item.name}
-                    secondary={
-                      <Box sx={{ mt: 1 }}>
-                        <Typography variant="body2" color="text.primary">
-                          ${item.price.toFixed(2)}
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                          <IconButton
-                            size="small"
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                          >
+                    secondary={   
+                    <><span style={{ display: 'block', marginTop: '8px', fontSize: '0.875rem', color: 'inherit' }}>
+                        ${item.price.toFixed(2)}
+                      </span><span style={{ display: 'flex', alignItems: 'center', marginTop: '8px' }}>
+                          <IconButton size="small" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
                             <RemoveIcon fontSize="small" />
                           </IconButton>
-                          <Typography sx={{ mx: 1 }}>{item.quantity}</Typography>
-                          <IconButton
-                            size="small"
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                          >
+                          <span style={{ margin: '0 8px' }}>{item.quantity}</span>
+                          <IconButton size="small" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
                             <AddIcon fontSize="small" />
                           </IconButton>
-                        </Box>
-                      </Box>
+                        </span></>
                     }
                   />
                 </ListItem>

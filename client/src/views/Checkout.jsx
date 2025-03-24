@@ -259,15 +259,12 @@ const Checkout = () => {
                     </ListItemAvatar>
                     <ListItemText
                       primary={item.name}
-                      secondary={
-                        <Box>
-                          <Typography variant="body2" component="span">
-                            ${item.price.toFixed(2)} × {item.quantity}
-                          </Typography>
-                          <Typography variant="body2" component="span" sx={{ float: 'right', fontWeight: 'bold' }}>
-                            ${(item.price * item.quantity).toFixed(2)}
-                          </Typography>
-                        </Box>
+                      secondary={ <span>
+                        {`$${item.price.toFixed(2)} × ${item.quantity}`}
+                        <span style={{ float: 'right', fontWeight: 'bold' }}>
+                          {`$${(item.price * item.quantity).toFixed(2)}`}
+                        </span>
+                      </span>
                       }
                     />
                   </ListItem>
