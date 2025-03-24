@@ -70,31 +70,27 @@ const adminService = {
   // Get dashboard statistics
   getDashboardStats: async () => {
     try {
-      // If your backend doesn't have a stats endpoint, create a mock response
-      try {
-        const response = await api.get('/admin/stats');
-        return response.data;
-      } catch (statsError) {
-        console.log('Stats endpoint not available, using orders API instead');
-        // Fallback: Get data from other endpoints to build stats
-        const [ordersRes, productsRes] = await Promise.all([
-          api.get('/orders'),
-          api.get('/products')
-        ]);
-        
-        const orders = ordersRes.data.orders || [];
-        const products = productsRes.data || [];
-        
-        // Calculate total revenue
-        const totalRevenue = orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
-        
-        return {
-          totalOrders: orders.length,
-          totalRevenue: totalRevenue.toFixed(2),
-          totalProducts: products.length,
-          totalUsers: 0 // We don't have this data without a specific endpoint
-        };
-      }
+      // Directly use alternative approach without trying the unavailable stats endpoint
+      console.log('Using orders and products APIs for dashboard stats');
+      
+      // Get data from other endpoints to build stats
+      const [ordersRes, productsRes] = await Promise.all([
+        api.get('/orders'),
+        api.get('/products')
+      ]);
+      
+      const orders = ordersRes.data.orders || [];
+      const products = productsRes.data || [];
+      
+      // Calculate total revenue
+      const totalRevenue = orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+      
+      return {
+        totalOrders: orders.length,
+        totalRevenue: totalRevenue.toFixed(2),
+        totalProducts: products.length,
+        totalUsers: 0 // We don't have this data without a specific endpoint
+      };
     } catch (error) {
       console.error('Error fetching dashboard stats:', error);
       // Return default values if stats can't be fetched

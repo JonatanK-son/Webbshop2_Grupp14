@@ -13,47 +13,11 @@ const api = axios.create({
   },
 });
 
-// Function to check if JWT token is expired
-const isTokenExpired = (token) => {
-  if (!token) return true;
-  
-  try {
-    // Get the payload part of the JWT
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c => {
-      return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
-
-    const { exp } = JSON.parse(jsonPayload);
-    
-    // Check if token is expired (exp is in seconds, Date.now() is in milliseconds)
-    return exp < Date.now() / 1000;
-  } catch (e) {
-    console.error('Error parsing JWT token:', e);
-    return true;
-  }
-};
-
 // Add a request interceptor for authentication
 api.interceptors.request.use(
   (config) => {
     // Add auth token if available
     const token = localStorage.getItem('token');
-    
-    // Check if token is expired
-    if (token && isTokenExpired(token)) {
-      console.log('Token expired, logging out');
-      // Clear token and user data
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      
-      // Optional: Reload page or redirect to login
-      // window.location.href = '/login';
-      
-      // Don't add expired token to request
-      return config;
-    }
     
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
@@ -82,9 +46,6 @@ api.interceptors.response.use(
         console.log('Unauthorized access, logging out');
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        
-        // Optional: Reload page to reset app state
-        // window.location.href = '/login';
       }
     } else if (error.request) {
       // Request was made but no response was received
