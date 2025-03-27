@@ -228,7 +228,6 @@ function Admin() {
         setProducts(
           products.map((p) => (p.id === currentProduct.id ? productData : p))
         );
-        setIsEditing(false);
       } else {
         // Add new product
         const newProduct = await productService.createProduct(productData);
