@@ -213,6 +213,7 @@ function Admin() {
   const handleSaveProduct = async () => {
     try {
       const productData = {
+        id : currentProduct.id,
         name: nameRef.current.value,
         price: priceRef.current.value,
         stock: stockRef.current.value,
@@ -227,6 +228,7 @@ function Admin() {
         setProducts(
           products.map((p) => (p.id === currentProduct.id ? productData : p))
         );
+        setIsEditing(false);
       } else {
         // Add new product
         const newProduct = await productService.createProduct(productData);
