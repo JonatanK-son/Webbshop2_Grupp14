@@ -137,7 +137,6 @@ const RatingComponent = ({ productId }) => {
 
   return (
     <Box sx={{ width: '100%' }}>
-      {/* Rating Summary - Two sections side by side */}
       <Box sx={{ 
         display: 'flex',
         justifyContent: 'space-between',
@@ -148,7 +147,6 @@ const RatingComponent = ({ productId }) => {
         pb: 2,
         borderBottom: '1px solid #eee'
       }}>
-        {/* Left side - Average rating */}
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Box sx={{ 
             display: 'flex', 
@@ -179,7 +177,6 @@ const RatingComponent = ({ productId }) => {
           </Box>
         </Box>
         
-        {/* Right side - Write review button */}
         <Button 
           variant="contained" 
           onClick={handleOpenDialog}
@@ -190,7 +187,6 @@ const RatingComponent = ({ productId }) => {
         </Button>
       </Box>
 
-      {/* Reviews List - More Compact */}
       {ratings.length > 0 ? (
         <List disablePadding>
           {ratings.map((rating, index) => (
